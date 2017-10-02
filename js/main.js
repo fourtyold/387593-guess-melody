@@ -16,16 +16,10 @@
   }
 
   function changeScreen(evt) {
-    if (evt.altKey && evt.keyCode === keyCodes.leftArrow) {
-      if (screenIndex > 0) {
-        screenIndex--;
-        mainSection.firstChild.remove();
-        showScreen(screenIndex);
-      }
-    }
-    if (evt.altKey && evt.keyCode === keyCodes.rightArrow) {
-      if (screenIndex < screens.length - 1) {
-        screenIndex++;
+    if (evt.altKey && Object.values(keyCodes).includes(evt.keyCode)) {
+      const newScreenIndex = screenIndex + (evt.keyCode === keyCodes.leftArrow ? -1 : 1);
+      if (newScreenIndex >= 0 && newScreenIndex < screens.length) {
+        screenIndex = newScreenIndex;
         mainSection.firstChild.remove();
         showScreen(screenIndex);
       }
