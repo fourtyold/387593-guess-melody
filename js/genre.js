@@ -90,12 +90,11 @@ const answerFlags = genreElement.querySelectorAll(`input[type=checkbox]`);
 const genreAnswerSend = genreElement.querySelector(`.genre-answer-send`);
 
 function answerFlagsHandler() {
+  genreAnswerSend.disabled = true;
   for (let i = 0; i < answerFlags.length; i++) {
     if (answerFlags[i].checked) {
       genreAnswerSend.disabled = false;
       break;
-    } else {
-      genreAnswerSend.disabled = true;
     }
   }
 }
@@ -109,7 +108,7 @@ function genreAnswerSendHandler() {
     case (randomNum <= 0.66):
       showScreen(timeElement);
       break;
-    case (randomNum > 0.66):
+    default:
       showScreen(limitElement);
       break;
   }
