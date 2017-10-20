@@ -1,8 +1,8 @@
 import assert from 'assert';
 import getScore from '../score';
 
-const slowAns = 30;
-const fastAns = 29;
+const slowAns = {time: 30};
+const fastAns = {time: 29};
 const userAnswersSlow = [slowAns, slowAns, slowAns, slowAns, slowAns, slowAns, slowAns, slowAns, slowAns, slowAns];
 const userAnswersFast = [fastAns, fastAns, fastAns, fastAns, fastAns, fastAns, fastAns, fastAns, fastAns, fastAns];
 const userAnswersMix = [fastAns, fastAns, fastAns, fastAns, fastAns, slowAns, slowAns, slowAns, slowAns, slowAns];

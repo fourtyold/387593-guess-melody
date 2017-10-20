@@ -1,17 +1,24 @@
 import assert from 'assert';
 import getTimer from '../timer';
 
-const timer = getTimer(60);
-const endTimer = getTimer(0);
+const onTimerEnd = () => {
+  return `Время вышло!`;
+};
+let timer = getTimer(60, onTimerEnd);
 
 describe(`Timer validator`, () => {
   it(`value should be 59 after 1 tick`, () => {
-    assert.equal(59, timer.tick().value);
+    timer.tick();
+    assert.equal(59, timer.value);
   });
   it(`value should be 58 after 2 tick`, () => {
-    assert.equal(58, timer.tick().tick().value);
+    timer = getTimer(60, onTimerEnd);
+    timer.tick();
+    timer.tick();
+    assert.equal(58, timer.value);
   });
-  it(`should say that (Время вышло!)`, () => {
-    assert.equal(`Время вышло!`, endTimer.tick());
+  it(`should return false`, () => {
+    timer = getTimer(0, onTimerEnd);
+    assert.equal(false, timer.tick());
   });
 });

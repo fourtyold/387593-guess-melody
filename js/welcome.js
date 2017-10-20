@@ -1,6 +1,8 @@
 import getElementFromTemplate from './element.js';
-import showScreen from './show-element.js';
-import artistElement from './artist.js';
+import {showScreen} from './show-element.js';
+import {artistElement, artistPlayer} from './artist.js';
+import headerTemplate from './header.js';
+import {initialState} from './data';
 
 const template = `<section class="logo" title="Угадай мелодию"><h1>Угадай мелодию</h1></section>
     <button class="main-play">Начать игру</button>
@@ -12,10 +14,12 @@ const template = `<section class="logo" title="Угадай мелодию"><h1>
     </p>`;
 
 const welcomeElement = getElementFromTemplate(template);
+const headerElement = getElementFromTemplate(headerTemplate(initialState));
 const mainPlay = welcomeElement.querySelector(`.main-play`);
 
 function mainPlayHandler() {
-  showScreen(artistElement);
+  showScreen(artistElement, headerElement);
+  artistPlayer.play();
   // mainPlay.removeEventListener(`click`, mainPlayHandler);
 }
 
