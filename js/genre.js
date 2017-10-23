@@ -1,10 +1,11 @@
 import getElementFromTemplate from './element.js';
-import {showScreen} from './show-element.js';
+import {showScreen, showHeader} from './show-element.js';
 import headerTemplate from './header.js';
 import limitElement from './limit.js';
 import {initialState, gameData, musicList, userAnswer} from './data.js';
 import getQuestion from './question-data.js';
 import {showResultScreen} from './result.js';
+import {togglePlayerControl} from './util.js';
 
 const genreTemplate = (game, question) => `
   <div class="main-wrap">
@@ -39,6 +40,8 @@ let playersControls;
 let headerElement;
 let genreForm;
 
+const GENRE_LVL_COUNT = 10;
+
 const getVariables = () => {
   gameQuestion = getQuestion(musicList, gameData.genre);
   genreElement = getElementFromTemplate(genreTemplate(gameData, gameQuestion));
@@ -51,13 +54,15 @@ const getVariables = () => {
 };
 
 const nextScreen = () => {
-  if (gameData.stat.length < 10) {
+  if (gameData.stat.length < GENRE_LVL_COUNT) {
     getVariables();
-    showScreen(genreElement, headerElement);
+    showScreen(genreElement);
+    showHeader(headerElement);
     setAnswerFlags();
     answerFlagsHandler();
     setHandlers();
   } else {
+    removeHandlers();
     showResultScreen();
   }
 };
@@ -73,15 +78,7 @@ const playerHandler = (evt) => {
         playersControls[i].classList.add(`player-control--play`);
       }
     });
-    if (genrePlayers[playerNumber].paused) {
-      genrePlayers[playerNumber].play();
-      playersControls[playerNumber].classList.remove(`player-control--play`);
-      playersControls[playerNumber].classList.add(`player-control--pause`);
-    } else {
-      genrePlayers[playerNumber].pause();
-      playersControls[playerNumber].classList.remove(`player-control--pause`);
-      playersControls[playerNumber].classList.add(`player-control--play`);
-    }
+    togglePlayerControl(genrePlayers[playerNumber], playersControls[playerNumber]);
   }
 };
 
@@ -128,6 +125,7 @@ const removeHandlers = () => {
 };
 
 const genreAnswerSendHandler = () => {
+  removeHandlers();
   const answerLinks = [];
   const answer = Object.create(userAnswer);
   answer.status = true;
@@ -143,10 +141,8 @@ const genreAnswerSendHandler = () => {
   answer.src = answerLinks;
   gameData.stat.push(answer);
   if (answer.status === true) {
-    removeHandlers();
     nextScreen();
   } else if (initialState.notes > 0) {
-    removeHandlers();
     initialState.notes--;
     nextScreen();
   } else {
@@ -158,6 +154,7 @@ const genreAnswerSendHandler = () => {
 
 (function () {
   getVariables();
+  setHandlers();
 })();
 
-export {genreElement, setHandlers};
+export {genreElement, answerFlagsHandler};

@@ -11,7 +11,7 @@ style="filter: url(.#blur); transform: rotate(-90deg) scaleY(-1); transform-orig
   </div>
   </svg>
   <div class="main-mistakes">
-  ${new Array(state.notes).fill(`<img class="main-mistake" src="img/wrong-answer.png" width="35" height="49">`).join(``)}
+  ${new Array(3 - state.notes).fill(`<img class="main-mistake" src="img/wrong-answer.png" width="35" height="49">`).join(``)}
   <!--// <img class="main-mistake" src="img/wrong-answer.png" width="35" height="49">-->
   <!--// <img class="main-mistake" src="img/wrong-answer.png" width="35" height="49">-->
   </div>`;

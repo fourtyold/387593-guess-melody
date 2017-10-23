@@ -1,10 +1,11 @@
 import getElementFromTemplate from './element.js';
-import {showScreen} from './show-element.js';
-import {genreElement, setHandlers} from './genre.js';
+import {showScreen, showHeader} from './show-element.js';
+import {genreElement, answerFlagsHandler} from './genre.js';
 import headerTemplate from './header.js';
 import {initialState, gameData, musicList, userAnswer} from './data.js';
 import getQuestion from './question-data.js';
 import limitElement from './limit.js';
+import {togglePlayerControl} from './util.js';
 
 const artistTemplate = (game, question) =>
   `
@@ -40,6 +41,8 @@ let mainAnswers;
 let headerElement;
 let gameForm;
 
+const ARTIST_LVL_COUNT = 5;
+
 const getVariables = () => {
   gameQuestion = getQuestion(musicList, gameData.artist);
   artistElement = getElementFromTemplate(artistTemplate(gameData, gameQuestion));
@@ -50,25 +53,38 @@ const getVariables = () => {
   gameForm = artistElement.querySelector(`.main-list`);
 };
 
+const repeatLvl = () => {
+  getVariables();
+  showScreen(artistElement);
+  showHeader(headerElement);
+  artistPlayer.play();
+  gameForm.addEventListener(`click`, (evt) => {
+    mainAnswerHandler(evt);
+  });
+  // playerControl.addEventListener(`click`, playerHandler);
+  playerControl.addEventListener(`click`, () => {
+    togglePlayerControl(artistPlayer, playerControl);
+  });
+};
+
+const switchLvl = () => {
+  headerElement = getElementFromTemplate(headerTemplate(initialState));
+  const answerFlags = genreElement.querySelectorAll(`input[type=checkbox]`);
+  const genreAnswerSend = genreElement.querySelector(`.genre-answer-send`);
+  Array.from(answerFlags).forEach((it) => {
+    it.checked = false;
+    it.addEventListener(`click`, answerFlagsHandler);
+  });
+  genreAnswerSend.disabled = true;
+  showScreen(genreElement);
+  showHeader(headerElement);
+};
+
 const nextScreen = () => {
-  if (gameData.stat.length < 5) {
-    getVariables();
-    showScreen(artistElement, headerElement);
-    artistPlayer.play();
-    gameForm.addEventListener(`click`, (evt) => {
-      mainAnswerHandler(evt);
-    });
-    playerControl.addEventListener(`click`, playerHandler);
+  if (gameData.stat.length < ARTIST_LVL_COUNT) {
+    repeatLvl();
   } else {
-    headerElement = getElementFromTemplate(headerTemplate(initialState));
-    const answerFlags = genreElement.querySelectorAll(`input[type=checkbox]`);
-    const genreAnswerSend = genreElement.querySelector(`.genre-answer-send`);
-    Array.from(answerFlags).forEach((it) => {
-      it.checked = false;
-    });
-    genreAnswerSend.disabled = true;
-    setHandlers();
-    showScreen(genreElement, headerElement);
+    switchLvl();
   }
 };
 
@@ -76,7 +92,9 @@ const mainAnswerHandler = (evt) => {
   gameForm.removeEventListener(`click`, () => {
     mainAnswerHandler(evt);
   });
-  playerControl.removeEventListener(`click`, playerHandler);
+  playerControl.removeEventListener(`click`, () => {
+    togglePlayerControl(artistPlayer, playerControl);
+  });
   let target = false;
   if (evt.target.classList.contains(`main-answer-preview`)) {
     target = evt.target.parentNode;
@@ -105,24 +123,15 @@ const mainAnswerHandler = (evt) => {
   }
 };
 
-const playerHandler = () => {
-  if (artistPlayer.paused) {
-    artistPlayer.play();
-    playerControl.classList.remove(`player-control--play`);
-    playerControl.classList.add(`player-control--pause`);
-  } else {
-    artistPlayer.pause();
-    playerControl.classList.remove(`player-control--pause`);
-    playerControl.classList.add(`player-control--play`);
-  }
-};
-
 ((() => {
   getVariables();
   gameForm.addEventListener(`click`, (evt) => {
     mainAnswerHandler(evt);
   });
-  playerControl.addEventListener(`click`, playerHandler);
+  playerControl.addEventListener(`click`, () => {
+    togglePlayerControl(artistPlayer, playerControl);
+  });
+  // playerControl.addEventListener(`click`, playerHandler);
 })());
 
 export {artistElement, artistPlayer};
