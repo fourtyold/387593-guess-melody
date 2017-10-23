@@ -1,8 +1,13 @@
-export default function getTimer(initValue) {
+export default function getTimer(initValue, callback) {
   return {
     value: initValue,
     tick() {
-      return (this.value <= 0) ? `Время вышло!` : getTimer(this.value - 1);
+      if (--this.value > 0) {
+        return true;
+      } else {
+        callback();
+        return false;
+      }
     }
   };
 }

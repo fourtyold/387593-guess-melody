@@ -1,29 +1,19 @@
 import getElementFromTemplate from './element.js';
-import showScreen from './show-element.js';
-import genreElement from './genre.js';
+import {showScreen, showHeader} from './show-element.js';
+import {genreElement, answerFlagsHandler} from './genre.js';
+import headerTemplate from './header.js';
+import {initialState, gameData, musicList, userAnswer} from './data.js';
+import getQuestion from './question-data.js';
+import limitElement from './limit.js';
+import {togglePlayerControl} from './util.js';
 
-const template = `<svg xmlns="http://www.w3.org/2000/svg" class="timer" viewBox="0 0 780 780">
-      <circle
-        cx="390" cy="390" r="370"
-        class="timer-line"
-        style="filter: url(.#blur); transform: rotate(-90deg) scaleY(-1); transform-origin: center"></circle>
-
-      <div class="timer-value" xmlns="http://www.w3.org/1999/xhtml">
-        <span class="timer-value-mins">05</span><!--
-        --><span class="timer-value-dots">:</span><!--
-        --><span class="timer-value-secs">00</span>
-      </div>
-    </svg>
-    <div class="main-mistakes">
-      <img class="main-mistake" src="img/wrong-answer.png" width="35" height="49">
-      <img class="main-mistake" src="img/wrong-answer.png" width="35" height="49">
-    </div>
-
+const artistTemplate = (game, question) =>
+  `
     <div class="main-wrap">
-      <h2 class="title main-title">Кто исполняет эту песню?</h2>
+      <h2 class="title main-title">${question.text} ${question.correctAnswer + 1}</h2>
       <div class="player-wrapper">
         <div class="player">
-          <audio></audio>
+          <audio src="${question.answers[question.correctAnswer].src}"></audio>
           <button class="player-control player-control--pause"></button>
           <div class="player-track">
             <span class="player-status"></span>
@@ -31,53 +21,117 @@ const template = `<svg xmlns="http://www.w3.org/2000/svg" class="timer" viewBox=
         </div>
       </div>
       <form class="main-list">
-        <div class="main-answer-wrapper">
+        ${[...question.answers].map((answer) =>
+    `<div class="main-answer-wrapper">
           <input class="main-answer-r" type="radio" id="answer-1" name="answer" value="val-1"/>
           <label class="main-answer" for="answer-1">
-            <img class="main-answer-preview" src="http://placehold.it/134x134"
+            <img class="main-answer-preview" src="${answer.image}"
                  alt="Пелагея" width="134" height="134">
-            Пелагея
+            ${answer.artist}
           </label>
-        </div>
-
-        <div class="main-answer-wrapper">
-          <input class="main-answer-r" type="radio" id="answer-2" name="answer" value="val-2"/>
-          <label class="main-answer" for="answer-2">
-            <img class="main-answer-preview" src="http://placehold.it/134x134"
-                 alt="Краснознаменная дивизия имени моей бабушки" width="134" height="134">
-            Краснознаменная дивизия имени моей бабушки
-          </label>
-        </div>
-
-        <div class="main-answer-wrapper">
-          <input class="main-answer-r" type="radio" id="answer-3" name="answer" value="val-3"/>
-          <label class="main-answer" for="answer-3">
-            <img class="main-answer-preview" src="http://placehold.it/134x134"
-                 alt="Lorde" width="134" height="134">
-            Lorde
-          </label>
-        </div>
+        </div>`).join(``)}
       </form>
     </div>`;
 
-const artistElement = getElementFromTemplate(template);
-const mainAnswers = artistElement.querySelectorAll(`.main-answer`);
-const genreAnswerSend = genreElement.querySelector(`.genre-answer-send`);
-const answerFlags = genreElement.querySelectorAll(`input[type=checkbox]`);
+let gameQuestion;
+let artistElement;
+let artistPlayer;
+let playerControl;
+let mainAnswers;
+let headerElement;
+let gameForm;
 
-function mainAnswerHandler() {
-  showScreen(genreElement);
-  genreAnswerSend.disabled = true;
+const ARTIST_LVL_COUNT = 5;
+
+const getVariables = () => {
+  gameQuestion = getQuestion(musicList, gameData.artist);
+  artistElement = getElementFromTemplate(artistTemplate(gameData, gameQuestion));
+  artistPlayer = artistElement.querySelector(`audio`);
+  playerControl = artistElement.querySelector(`.player-control`);
+  mainAnswers = artistElement.querySelectorAll(`.main-answer`);
+  headerElement = getElementFromTemplate(headerTemplate(initialState));
+  gameForm = artistElement.querySelector(`.main-list`);
+};
+
+const repeatLvl = () => {
+  getVariables();
+  showScreen(artistElement);
+  showHeader(headerElement);
+  artistPlayer.play();
+  gameForm.addEventListener(`click`, (evt) => {
+    mainAnswerHandler(evt);
+  });
+  // playerControl.addEventListener(`click`, playerHandler);
+  playerControl.addEventListener(`click`, () => {
+    togglePlayerControl(artistPlayer, playerControl);
+  });
+};
+
+const switchLvl = () => {
+  headerElement = getElementFromTemplate(headerTemplate(initialState));
+  const answerFlags = genreElement.querySelectorAll(`input[type=checkbox]`);
+  const genreAnswerSend = genreElement.querySelector(`.genre-answer-send`);
   Array.from(answerFlags).forEach((it) => {
     it.checked = false;
+    it.addEventListener(`click`, answerFlagsHandler);
   });
-  // Array.from(mainAnswers).forEach((it) => {
-  //   it.removeEventListener(`click`, mainAnswerHandler);
-  // });
-}
+  genreAnswerSend.disabled = true;
+  showScreen(genreElement);
+  showHeader(headerElement);
+};
 
-Array.from(mainAnswers).forEach((it) => {
-  it.addEventListener(`click`, mainAnswerHandler);
-});
+const nextScreen = () => {
+  if (gameData.stat.length < ARTIST_LVL_COUNT) {
+    repeatLvl();
+  } else {
+    switchLvl();
+  }
+};
 
-export default artistElement;
+const mainAnswerHandler = (evt) => {
+  gameForm.removeEventListener(`click`, () => {
+    mainAnswerHandler(evt);
+  });
+  playerControl.removeEventListener(`click`, () => {
+    togglePlayerControl(artistPlayer, playerControl);
+  });
+  let target = false;
+  if (evt.target.classList.contains(`main-answer-preview`)) {
+    target = evt.target.parentNode;
+  } else if (evt.target.classList.contains(`main-answer`)) {
+    target = evt.target;
+  }
+  if (target) {
+    const answerNumber = Array.from(mainAnswers).indexOf(target);
+    const answer = Object.create(userAnswer);
+    answer.time = 30;
+    answer.src = gameQuestion.answers[answerNumber].src;
+    if (answerNumber === gameQuestion.correctAnswer) {
+      answer.status = true;
+      gameData.stat.push(answer);
+      nextScreen();
+    } else if (initialState.notes > 0) {
+      answer.status = false;
+      gameData.stat.push(answer);
+      initialState.notes--;
+      nextScreen();
+    } else {
+      initialState.notes = 3;
+      gameData.stat = [];
+      showScreen(limitElement);
+    }
+  }
+};
+
+((() => {
+  getVariables();
+  gameForm.addEventListener(`click`, (evt) => {
+    mainAnswerHandler(evt);
+  });
+  playerControl.addEventListener(`click`, () => {
+    togglePlayerControl(artistPlayer, playerControl);
+  });
+  // playerControl.addEventListener(`click`, playerHandler);
+})());
+
+export {artistElement, artistPlayer};
