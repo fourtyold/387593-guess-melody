@@ -1,7 +1,6 @@
-import {Question} from './data.js';
+import {Question} from '../data.js';
 
 const getQuestion = (music, gameType) => {
-  // const gameQuestion = Object.create(Object.getPrototypeOf(question));
   const gameQuestion = new Question(gameType);
   const songs = music.slice();
   for (let i = 0; i < gameType; i++) {
@@ -19,7 +18,6 @@ const getQuestion = (music, gameType) => {
     });
 
   }
-  // console.log(gameQuestion);
   return gameQuestion;
 };
 

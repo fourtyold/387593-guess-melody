@@ -6,6 +6,7 @@ const initialState = {
 const gameData = {
   artist: 3,
   genre: 4,
+  answerTime: null,
   stat: [],
   history: []
 };

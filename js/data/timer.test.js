@@ -1,5 +1,5 @@
 import assert from 'assert';
-import getTimer from '../timer';
+import getTimer from '../utils/timer';
 
 const onTimerEnd = () => {
   return `Время вышло!`;

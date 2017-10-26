@@ -1,5 +1,5 @@
 import assert from 'assert';
-import showScore from '../score-show';
+import showScore from '../utils/score-show';
 
 const usersScoreList = [1, 3, 5, 7, 9, 11, 13, 15, 17];
 
