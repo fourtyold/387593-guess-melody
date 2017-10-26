@@ -1,5 +1,5 @@
 import assert from 'assert';
-import getScore from '../score';
+import getScore from '../utils/score';
 
 const slowAns = {time: 30};
 const fastAns = {time: 29};

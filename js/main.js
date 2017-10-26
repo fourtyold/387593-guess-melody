@@ -1,8 +1,10 @@
-import welcomeElement from './welcome.js';
-import {showScreen} from './show-element.js';
+// import welcomeElement from './screens/welcome/welcome.js';
+import {showScreen} from './utils/show-element.js';
+import welcome from './screens/welcome/welcome.js';
 
 function init() {
-  showScreen(welcomeElement);
+  // showScreen(welcomeElement);
+  showScreen(welcome);
 }
 
 init();
