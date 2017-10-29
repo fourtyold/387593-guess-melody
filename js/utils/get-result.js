@@ -1,23 +1,22 @@
-import {initialState, gameData} from '../data.js';
 import getScore from './score.js';
 
-const getResult = () => {
+const getResult = (answerObj) => {
   let time = 0;
   let answers = 0;
-  gameData.stat.forEach((it) => {
+  answerObj.stat.forEach((it) => {
     time += it.time;
     if (it.time < 30) {
       answers++;
     }
   });
-  if (gameData.stat.length) {
-    gameData.history.push(getScore(gameData.stat, initialState.notes));
+  if (answerObj.stat.length) {
+    answerObj.history.push(getScore(answerObj));
   }
-  gameData.history.sort((a, b) => {
+  answerObj.history.sort((a, b) => {
     return b - a;
   });
-  const success = (gameData.history.length - (gameData.history.indexOf(getScore(gameData.stat, initialState.notes)) + 1)) / gameData.history.length * 100;
-  const place = gameData.history.indexOf(getScore(gameData.stat, initialState.notes)) + 1;
+  const success = (answerObj.history.length - (answerObj.history.indexOf(getScore(answerObj)) + 1)) / answerObj.history.length * 100;
+  const place = answerObj.history.indexOf(getScore(answerObj)) + 1;
   return {
     totalTime: time,
     fastAnswers: answers,

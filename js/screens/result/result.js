@@ -1,10 +1,18 @@
+import {showScreen} from '../../utils/show-element.js';
+import Application from '../../application.js';
 import ResultView from './result-view.js';
-import getResult from '../../utils/get-result';
+import ResultModel from './result-model.js';
 
-const result = new ResultView(getResult());
+class ResultScreen {
 
-result.getResult = () => {
-  result.resultObj = getResult();
-};
+  init(result) {
+    this.model = new ResultModel(result);
+    this.view = new ResultView(this.model);
+    this.view.replayHandler = () => {
+      Application.showWelcome();
+    };
+    showScreen(this.view);
+  }
+}
 
-export default result;
+export default new ResultScreen();

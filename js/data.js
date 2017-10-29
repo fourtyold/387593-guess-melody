@@ -1,19 +1,21 @@
-const initialState = {
+const state = {
   time: 300,
-  notes: 3
+  maxMistakes: 3,
+  artist: 3,
+  genre: 4
 };
 
 const gameData = {
-  artist: 3,
-  genre: 4,
   answerTime: null,
   stat: [],
+  mistakes: 0,
+  result: null,
   history: []
 };
 
 function Question(gameType) {
   this.answers = [];
-  if (gameType === gameData.artist) {
+  if (gameType === state.artist) {
     this.text = `Кто исполняет эту песню?`;
     this.correctAnswer = null;
   } else {
@@ -23,9 +25,15 @@ function Question(gameType) {
 }
 
 const userAnswer = {
-  status: null,
+  status: true,
   src: null,
   time: null
+};
+
+const gameResult = {
+  limit: 1,
+  time: 2,
+  score: 3
 };
 
 const musicList = [
@@ -66,4 +74,4 @@ const musicList = [
   }
 ];
 
-export {initialState, gameData, musicList, userAnswer, Question};
+export {state, gameData, musicList, userAnswer, Question, gameResult};
