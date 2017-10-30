@@ -2,7 +2,7 @@ import getQuestion from '../../utils/question-data.js';
 import {togglePlayerControl} from '../../utils/util.js';
 import getTimer from '../../utils/timer.js';
 
-const ARTIST_LVL_COUNT = 5;
+const ARTIST_LVL_COUNT = 9;
 
 export default class GameModel {
   constructor(data) {

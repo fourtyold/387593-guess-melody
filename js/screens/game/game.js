@@ -3,6 +3,7 @@ import GameModel from './game-model.js';
 import {showScreen} from '../../utils/show-element.js';
 import {state, gameData, musicList, userAnswer, Question, gameResult} from '../../data.js';
 import Application from '../../application.js';
+import getResult from '../../utils/get-result.js';
 
 const TOTAL_LVL_COUNT = 10;
 
@@ -51,7 +52,8 @@ class GameScreen {
   showResultScreen(screenType) {
     this.model.data.gameData.result = screenType;
     this.stopTimer();
-    Application.showStats(this.model.data.gameData);
+    const resultObj = getResult(this.model.data.gameData);
+    Application.showStats(resultObj);
   }
 
   artistAnswerHandler(evt, artistAnswers) {
@@ -86,7 +88,8 @@ class GameScreen {
     this.model.data.gameData.mistakes = 0;
     this.model.data.gameData.stat = [];
     this.model.data.gameData.result = this.model.data.gameResult.time;
-    Application.showStats(this.model.data.gameData);
+    const resultObj = getResult(this.model.data.gameData);
+    Application.showStats(resultObj);
   }
 
   tick() {

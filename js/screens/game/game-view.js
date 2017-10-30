@@ -3,7 +3,7 @@ import ArtistView from './artist-view.js';
 import GenreView from './genre-view.js';
 import HeaderView from './header-view.js';
 
-const ARTIST_LVL_COUNT = 5;
+const ARTIST_LVL_COUNT = 9;
 
 const update = (container, view) => {
   while (container.firstChild) {

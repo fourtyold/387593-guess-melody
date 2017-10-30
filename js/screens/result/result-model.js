@@ -1,16 +1,13 @@
 import {gameResult} from '../../data.js';
-import getScore from '../../utils/score.js';
-import getResult from '../../utils/get-result.js';
 
 export default class ResultModel {
   constructor(result) {
     this.resultObj = result;
-    this.resultSummary = getResult(this.resultObj);
   }
 
   getResultTitle() {
     let content;
-    switch (this.resultObj.result) {
+    switch (this.resultObj.userResult) {
       case gameResult.limit:
         content = `Какая жалость!`;
         break;
@@ -26,7 +23,7 @@ export default class ResultModel {
 
   getResultMainStat() {
     let content;
-    switch (this.resultObj.result) {
+    switch (this.resultObj.userResult) {
       case gameResult.limit:
         content = `У вас закончились все попытки.<br>Ничего, повезёт в следующий раз!`;
         break;
@@ -34,9 +31,9 @@ export default class ResultModel {
         content = `Время вышло!<br>Вы не успели отгадать все мелодии`;
         break;
       case gameResult.score:
-        content = `За ${Math.floor(this.resultSummary.totalTime / 60)} минуты и ${this.resultSummary.totalTime % 60} секунд
-       <br>вы набрали ${getScore(this.resultObj)} баллов (${this.resultSummary.fastAnswers} быстрых)
-       <br>совершив ${this.resultObj.mistakes} ошибки`;
+        content = `За ${Math.floor(this.resultObj.totalTime / 60)} минуты и ${this.resultObj.totalTime % 60} секунд
+       <br>вы набрали ${this.resultObj.userScore} баллов (${this.resultObj.fastAnswers} быстрых)
+       <br>совершив ${this.resultObj.mistakesCnt} ошибки`;
         break;
     }
     return content;
@@ -44,13 +41,13 @@ export default class ResultModel {
 
   getResultMainComparison() {
     let content;
-    switch (this.resultObj.result) {
+    switch (this.resultObj.userResult) {
       case gameResult.limit:
       case gameResult.time:
         content = ``;
         break;
       case gameResult.score:
-        content = `Вы заняли ${this.resultSummary.currentPlace} место из ${this.resultObj.history.length}. Это лучше чем у ${this.resultSummary.successPercent}% игроков`;
+        content = `Вы заняли ${this.resultObj.currentPlace} место из ${this.resultObj.totalPlace}. Это лучше чем у ${this.resultObj.successPercent}% игроков`;
         break;
     }
     return content;
@@ -58,7 +55,7 @@ export default class ResultModel {
 
   getButtonText() {
     let content;
-    switch (this.resultObj.result) {
+    switch (this.resultObj.userResult) {
       case gameResult.limit:
       case gameResult.time:
         content = `Попробовать ещё раз`;
