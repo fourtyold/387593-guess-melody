@@ -2,29 +2,29 @@ import welcomeScreen from './screens/welcome/welcome.js';
 import gameScreen from './screens/game/game.js';
 import resultScreen from './screens/result/result.js';
 
-const ControllerId = {
-  WELCOME: ``,
-  GAME: `game`,
-  RESULT: `result`
-};
-
-const saveState = (state) => {
-  return JSON.stringify(state);
-};
-
-const loadState = (dataString) => {
-  try {
-    return JSON.parse(dataString);
-  } catch (e) {
-    return false;
-  }
-};
-
-const routes = {
-  [ControllerId.WELCOME]: welcomeScreen,
-  [ControllerId.GAME]: gameScreen,
-  [ControllerId.RESULT]: resultScreen
-};
+// const ControllerId = {
+//   WELCOME: ``,
+//   GAME: `game`,
+//   RESULT: `result`
+// };
+//
+// const saveState = (state) => {
+//   return JSON.stringify(state);
+// };
+//
+// const loadState = (dataString) => {
+//   try {
+//     return JSON.parse(dataString);
+//   } catch (e) {
+//     return false;
+//   }
+// };
+//
+// const routes = {
+//   [ControllerId.WELCOME]: welcomeScreen,
+//   [ControllerId.GAME]: gameScreen,
+//   [ControllerId.RESULT]: resultScreen
+// };
 
 export default class Application {
 
