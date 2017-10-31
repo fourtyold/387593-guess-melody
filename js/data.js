@@ -26,6 +26,17 @@ function Question(gameType) {
   }
 }
 
+function ResultObject() {
+  this.userResult = null;
+  this.userScore = null;
+  this.mistakesCnt = null;
+  this.totalTime = null;
+  this.fastAnswers = null;
+  this.successPercent = null;
+  this.currentPlace = null;
+  this.totalPlace = null;
+}
+
 const userAnswer = {
   status: true,
   src: null,
@@ -76,4 +87,4 @@ const musicList = [
   }
 ];
 
-export {state, gameData, musicList, userAnswer, Question, gameResult};
+export {state, gameData, musicList, userAnswer, Question, gameResult, ResultObject};
