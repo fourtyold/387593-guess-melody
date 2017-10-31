@@ -51,18 +51,15 @@ export default class Application {
   }
 
   static showWelcome() {
-    // welcomeScreen.init();
     location.hash = ControllerId.WELCOME;
   }
 
   static showGame() {
     location.hash = ControllerId.GAME;
-    // gameScreen.init();
   }
 
   static showStats(result) {
     location.hash = `${ControllerId.RESULT}?${saveState(cryptResult(result))}`;
-    // resultScreen.init(result);
   }
 
 }

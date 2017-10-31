@@ -1,9 +1,12 @@
+import {ResultObject} from '../../data.js';
+
 export default class ResultModel {
   constructor(result) {
     this.resultObj = result;
   }
 
   static getResult(answerObj) {
+    const resultObj = new ResultObject();
     let time = 0;
     let answers = 0;
     const score = this.getScore(answerObj);
@@ -19,18 +22,15 @@ export default class ResultModel {
     answerObj.history.sort((a, b) => {
       return b - a;
     });
-    const success = (answerObj.history.length - (answerObj.history.indexOf(score) + 1)) / answerObj.history.length * 100;
-    const place = answerObj.history.indexOf(score) + 1;
-    return {
-      userResult: answerObj.result,
-      userScore: score,
-      mistakesCnt: answerObj.mistakes,
-      totalTime: time,
-      fastAnswers: answers,
-      successPercent: Math.floor(success),
-      currentPlace: place,
-      totalPlace: answerObj.history.length
-    };
+    resultObj.userResult = answerObj.result;
+    resultObj.userScore = score;
+    resultObj.mistakesCnt = answerObj.mistakes;
+    resultObj.totalTime = time;
+    resultObj.fastAnswers = answers;
+    resultObj.successPercent = Math.floor((answerObj.history.length - (answerObj.history.indexOf(score) + 1)) / answerObj.history.length * 100);
+    resultObj.currentPlace = answerObj.history.indexOf(score) + 1;
+    resultObj.totalPlace = answerObj.history.length;
+    return resultObj;
   }
 
   static getScore(answerObj) {
