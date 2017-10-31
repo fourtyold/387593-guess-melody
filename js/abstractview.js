@@ -1,10 +1,11 @@
-import getElementFromTemplate from './utils/element.js';
+const app = document.querySelector(`.app`);
+const mainSection = app.querySelector(`.main`);
 
 export default class AbstractView {
   get template() {}
 
   render() {
-    return getElementFromTemplate(this.template.trim());
+    return this.getElementFromTemplate(this.template.trim());
   }
 
   bind() {}
@@ -16,4 +17,18 @@ export default class AbstractView {
     }
     return this._element;
   }
+
+  getElementFromTemplate(str) {
+    let div = document.createElement(`div`);
+    div.appendChild(document.createRange().createContextualFragment(str));
+    return div;
+  }
+
+  showScreen(screen) {
+    while (mainSection.firstChild) {
+      mainSection.firstChild.remove();
+    }
+    mainSection.appendChild(screen.element);
+  }
+
 }

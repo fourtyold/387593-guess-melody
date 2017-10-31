@@ -43,16 +43,13 @@ export default class ArtistView extends AbstractView {
       this.playerHandler(artistPlayer, playerControl);
     });
     const gameForm = this.element.querySelector(`.main-list`);
-    const mainAnswers = this.element.querySelectorAll(`.main-answer`);
+    const artistAnswers = this.element.querySelectorAll(`.main-answer`);
     gameForm.addEventListener(`click`, (evt) => {
-      this.mainAnswerHandler(evt, mainAnswers, this.gameQuestion);
+      this.artistAnswerHandler(evt, artistAnswers);
     });
     this.newPlayer = artistPlayer;
   }
 
   playerHandler() {}
-  mainAnswerHandler() {}
-  switchLvl() {}
-  repeatLvl() {}
-  nextScreen() {}
+  artistAnswerHandler() {}
 }

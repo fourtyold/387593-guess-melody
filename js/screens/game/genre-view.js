@@ -39,23 +39,23 @@ export default class GenreView extends AbstractView {
     const genreForm = this.element.querySelector(`.genre`);
     const genrePlayers = this.element.querySelectorAll(`audio`);
     const playersControls = this.element.querySelectorAll(`.player-control`);
+    this.newPlayer = false;
 
-    this.answerFlagsHandler(answerFlags, genreAnswerSend);
+    genreAnswerSend.disabled = true;
     Array.from(answerFlags).forEach((it) => {
       it.addEventListener(`click`, () => {
-        this.answerFlagsHandler(answerFlags, genreAnswerSend);
+        this.genreFlagsHandler(answerFlags, genreAnswerSend);
       });
     });
     genreAnswerSend.addEventListener(`click`, (evt) => {
-      this.genreAnswerSendHandler(evt, answerFlags);
+      this.genreAnswerHandler(evt, answerFlags);
     });
     genreForm.addEventListener(`click`, (evt) => {
-      this.playerHandler(evt, genrePlayers, playersControls);
+      this.playersHandler(evt, genrePlayers, playersControls);
     });
   }
 
-  answerFlagsHandler() {}
-  genreAnswerSendHandler() {}
-  playerHandler() {}
-  nextScreen() {}
+  genreFlagsHandler() {}
+  genreAnswerHandler() {}
+  playersHandler() {}
 }
