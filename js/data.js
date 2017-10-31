@@ -2,7 +2,9 @@ const state = {
   time: 300,
   maxMistakes: 3,
   artist: 3,
-  genre: 4
+  genre: 4,
+  artistScreens: 5,
+  totalScreens: 10
 };
 
 const gameData = {

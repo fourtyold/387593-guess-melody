@@ -1,11 +1,9 @@
 import GameView from './game-view.js';
 import GameModel from './game-model.js';
-import {showScreen} from '../../utils/show-element.js';
 import {state, gameData, musicList, userAnswer, Question, gameResult} from '../../data.js';
 import Application from '../../application.js';
-import getResult from '../../utils/get-result.js';
-
-const TOTAL_LVL_COUNT = 10;
+import ResultModel from '../result/result-model.js';
+import {togglePlayerControl} from '../../utils/util';
 
 const initialData = {
   state,
@@ -20,27 +18,63 @@ class GameScreen {
   constructor(data = initialData) {
     this.model = new GameModel(data);
     this.view = new GameView(this.model);
-    this.model.artistAnswerHandler = (evt, artistAnswers) => this.artistAnswerHandler(evt, artistAnswers);
-    this.model.genreAnswerHandler = (evt, answerFlags) => this.genreAnswerHandler(evt, answerFlags);
-    this.model.onTimeOut = () => this.onTimeOut();
   }
 
   init() {
+    this.bind();
     this.model.resetGameData();
-    this.model.getQuestion();
-    showScreen(this.view);
+    this.model.updateQuestion();
+    this.view.showScreen(this.view);
     this.view.updateScreen();
-    showScreen(this.view);
+    this.view.showScreen(this.view);
     this.view.newPlayer.play();
     this.tick();
   }
 
+  bind() {
+    this.model.artistAnswerHandler = (evt, artistAnswers) => this.artistAnswerHandler(evt, artistAnswers);
+    this.model.genreAnswerHandler = (evt, answerFlags) => this.genreAnswerHandler(evt, answerFlags);
+    this.model.onTimeOut = () => this.onTimeOut();
+    this.model.playerHandler = (artistPlayer, playerControl) => this.playerHandler(artistPlayer, playerControl);
+    this.model.genreFlagsHandler = (answerFlags, genreAnswerSend) => this.genreFlagsHandler(answerFlags, genreAnswerSend);
+    this.model.playersHandler = (evt, genrePlayers, playersControls) => this.playersHandler(evt, genrePlayers, playersControls);
+  }
+
+  playerHandler(artistPlayer, playerControl) {
+    togglePlayerControl(artistPlayer, playerControl);
+  }
+
+  genreFlagsHandler(answerFlags, genreAnswerSend) {
+    genreAnswerSend.disabled = true;
+    for (let i = 0; i < answerFlags.length; i++) {
+      if (answerFlags[i].checked) {
+        genreAnswerSend.disabled = false;
+        break;
+      }
+    }
+  }
+
+  playersHandler(evt, genrePlayers, playersControls) {
+    if (evt.target.classList.contains(`player-control`)) {
+      evt.preventDefault();
+      let playerNumber = Array.from(playersControls).indexOf(evt.target);
+      Array.from(genrePlayers).forEach((it, i) => {
+        if (it !== genrePlayers[playerNumber]) {
+          it.pause();
+          playersControls[i].classList.remove(`player-control--pause`);
+          playersControls[i].classList.add(`player-control--play`);
+        }
+      });
+      togglePlayerControl(genrePlayers[playerNumber], playersControls[playerNumber]);
+    }
+  }
+
   showNextGameScreen(answer) {
     this.model.data.gameData.stat.push(answer);
-    if (this.model.data.gameData.stat.length < TOTAL_LVL_COUNT) {
-      this.model.getQuestion();
+    if (this.model.data.gameData.stat.length < this.model.data.state.totalScreens) {
+      this.model.updateQuestion();
       this.view.updateScreen();
-      showScreen(this.view);
+      this.view.showScreen(this.view);
       if (this.view.newPlayer) {
         this.view.newPlayer.play();
       }
@@ -52,7 +86,7 @@ class GameScreen {
   showResultScreen(screenType) {
     this.model.data.gameData.result = screenType;
     this.stopTimer();
-    const resultObj = getResult(this.model.data.gameData);
+    const resultObj = ResultModel.getResult(this.model.data.gameData);
     Application.showStats(resultObj);
   }
 
@@ -88,7 +122,7 @@ class GameScreen {
     this.model.data.gameData.mistakes = 0;
     this.model.data.gameData.stat = [];
     this.model.data.gameData.result = this.model.data.gameResult.time;
-    const resultObj = getResult(this.model.data.gameData);
+    const resultObj = ResultModel.getResult(this.model.data.gameData);
     Application.showStats(resultObj);
   }
 

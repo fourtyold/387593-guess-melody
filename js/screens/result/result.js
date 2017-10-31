@@ -1,4 +1,3 @@
-import {showScreen} from '../../utils/show-element.js';
 import Application from '../../application.js';
 import ResultView from './result-view.js';
 import ResultModel from './result-model.js';
@@ -11,7 +10,7 @@ class ResultScreen {
     this.view.replayHandler = () => {
       Application.showWelcome();
     };
-    showScreen(this.view);
+    this.view.showScreen(this.view);
   }
 }
 

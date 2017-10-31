@@ -1,69 +1,57 @@
-import {gameResult} from '../../data.js';
-
 export default class ResultModel {
   constructor(result) {
     this.resultObj = result;
   }
 
-  getResultTitle() {
-    let content;
-    switch (this.resultObj.userResult) {
-      case gameResult.limit:
-        content = `Какая жалость!`;
-        break;
-      case gameResult.time:
-        content = `Увы и ах!`;
-        break;
-      case gameResult.score:
-        content = `Вы настоящий меломан!`;
-        break;
+  static getResult(answerObj) {
+    let time = 0;
+    let answers = 0;
+    const score = this.getScore(answerObj);
+    answerObj.stat.forEach((it) => {
+      time += it.time;
+      if (it.time < 30) {
+        answers++;
+      }
+    });
+    if (answerObj.stat.length) {
+      answerObj.history.push(score);
     }
-    return content;
+    answerObj.history.sort((a, b) => {
+      return b - a;
+    });
+    const success = (answerObj.history.length - (answerObj.history.indexOf(score) + 1)) / answerObj.history.length * 100;
+    const place = answerObj.history.indexOf(score) + 1;
+    return {
+      userResult: answerObj.result,
+      userScore: score,
+      mistakesCnt: answerObj.mistakes,
+      totalTime: time,
+      fastAnswers: answers,
+      successPercent: Math.floor(success),
+      currentPlace: place,
+      totalPlace: answerObj.history.length
+    };
   }
 
-  getResultMainStat() {
-    let content;
-    switch (this.resultObj.userResult) {
-      case gameResult.limit:
-        content = `У вас закончились все попытки.<br>Ничего, повезёт в следующий раз!`;
-        break;
-      case gameResult.time:
-        content = `Время вышло!<br>Вы не успели отгадать все мелодии`;
-        break;
-      case gameResult.score:
-        content = `За ${Math.floor(this.resultObj.totalTime / 60)} минуты и ${this.resultObj.totalTime % 60} секунд
-       <br>вы набрали ${this.resultObj.userScore} баллов (${this.resultObj.fastAnswers} быстрых)
-       <br>совершив ${this.resultObj.mistakesCnt} ошибки`;
-        break;
-    }
-    return content;
-  }
+  static getScore(answerObj) {
+    const slowAns = 30;
+    const maxMistakes = 4;
+    const mistakePrice = 2;
+    const answersNumber = 10;
+    const maxScore = 20;
 
-  getResultMainComparison() {
-    let content;
-    switch (this.resultObj.userResult) {
-      case gameResult.limit:
-      case gameResult.time:
-        content = ``;
-        break;
-      case gameResult.score:
-        content = `Вы заняли ${this.resultObj.currentPlace} место из ${this.resultObj.totalPlace}. Это лучше чем у ${this.resultObj.successPercent}% игроков`;
-        break;
-    }
-    return content;
-  }
+    let score = maxScore;
 
-  getButtonText() {
-    let content;
-    switch (this.resultObj.userResult) {
-      case gameResult.limit:
-      case gameResult.time:
-        content = `Попробовать ещё раз`;
-        break;
-      case gameResult.score:
-        content = `Сыграть ещё раз`;
-        break;
+    if (answerObj.mistakes === maxMistakes || answerObj.stat.length < answersNumber - 1) {
+      return -1;
+    } else {
+      score -= mistakePrice * answerObj.mistakes;
     }
-    return content;
+    answerObj.stat.forEach((it) => {
+      if (it.time >= slowAns) {
+        score--;
+      }
+    });
+    return score;
   }
 }

@@ -1,8 +1,5 @@
-import getQuestion from '../../utils/question-data.js';
-import {togglePlayerControl} from '../../utils/util.js';
+import {Question} from '../../data.js';
 import getTimer from '../../utils/timer.js';
-
-const ARTIST_LVL_COUNT = 9;
 
 export default class GameModel {
   constructor(data) {
@@ -10,12 +7,28 @@ export default class GameModel {
     this.timer = getTimer(data.state.time, this.onTimeOut);
   }
 
-  getQuestion() {
-    this.gameQuestion = (this.data.gameData.stat.length < ARTIST_LVL_COUNT) ? (getQuestion(this.data.musicList, this.data.state.artist)) : (getQuestion(this.data.musicList, this.data.state.genre));
+  updateQuestion() {
+    this.gameQuestion = (this.data.gameData.stat.length < this.data.state.artistScreens) ? (this.getQuestion(this.data.musicList, this.data.state.artist)) : (this.getQuestion(this.data.musicList, this.data.state.genre));
   }
 
-  playerHandler(artistPlayer, playerControl) {
-    togglePlayerControl(artistPlayer, playerControl);
+  getQuestion(music, gameType) {
+    const gameQuestion = new Question(gameType);
+    const songs = music.slice();
+    for (let i = 0; i < gameType; i++) {
+      const song = songs.splice(Math.floor(Math.random() * songs.length), 1);
+      gameQuestion.answers.push(song[0]);
+    }
+    if (gameQuestion.correctAnswer === null) {
+      gameQuestion.correctAnswer = Math.floor(Math.random() * gameQuestion.answers.length);
+    } else {
+      const genre = gameQuestion.answers[Math.floor(Math.random() * gameQuestion.answers.length)].genre;
+      gameQuestion.answers.forEach((answer, index) => {
+        if (answer.genre === genre) {
+          gameQuestion.correctAnswers.push(index);
+        }
+      });
+    }
+    return gameQuestion;
   }
 
   onArtistAnswer(evt) {
@@ -35,35 +48,9 @@ export default class GameModel {
     if (answerNumber !== this.gameQuestion.correctAnswer) {
       answer.status = false;
     }
-    // answer.time = 30;
     answer.src = this.gameQuestion.answers[answerNumber].src;
     this.data.gameData.answerTime = this.timer.value;
     return answer;
-  }
-
-  genreFlagsHandler(answerFlags, genreAnswerSend) {
-    genreAnswerSend.disabled = true;
-    for (let i = 0; i < answerFlags.length; i++) {
-      if (answerFlags[i].checked) {
-        genreAnswerSend.disabled = false;
-        break;
-      }
-    }
-  }
-
-  playersHandler(evt, genrePlayers, playersControls) {
-    if (evt.target.classList.contains(`player-control`)) {
-      evt.preventDefault();
-      let playerNumber = Array.from(playersControls).indexOf(evt.target);
-      Array.from(genrePlayers).forEach((it, i) => {
-        if (it !== genrePlayers[playerNumber]) {
-          it.pause();
-          playersControls[i].classList.remove(`player-control--pause`);
-          playersControls[i].classList.add(`player-control--play`);
-        }
-      });
-      togglePlayerControl(genrePlayers[playerNumber], playersControls[playerNumber]);
-    }
   }
 
   getGenreAnswer(answerFlags) {
@@ -71,7 +58,6 @@ export default class GameModel {
     const answer = Object.create(this.data.userAnswer);
     answer.status = true;
     answer.time = this.data.gameData.answerTime - this.timer.value;
-    // answer.time = 30;
     this.data.gameData.answerTime = this.timer.value;
     Array.from(answerFlags).forEach((it, ind) => {
       if (it.checked) {
@@ -91,6 +77,9 @@ export default class GameModel {
     this.data.gameData.answerTime = this.data.state.time;
   }
 
+  playerHandler() {}
+  genreFlagsHandler() {}
+  playersHandler() {}
   artistAnswerHandler() {}
   genreAnswerHandler() {}
   onTimeOut() {}

@@ -1,4 +1,3 @@
-import {showScreen} from '../../utils/show-element.js';
 import Application from '../../application.js';
 import WelcomeView from './welcome-view.js';
 
@@ -11,7 +10,7 @@ class WelcomeScreen {
     this.view.mainPlayClick = () => {
       Application.showGame();
     };
-    showScreen(this.view);
+    this.view.showScreen(this.view);
   }
 }
 
