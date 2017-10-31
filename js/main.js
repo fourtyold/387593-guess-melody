@@ -1,4 +1,4 @@
 import Application from './application.js';
 
-Application.showWelcome();
-// Application.init();
+// Application.showWelcome();
+Application.init();
