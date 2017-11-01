@@ -28,6 +28,20 @@ ${new Array(this.mistakes).fill(`<img class="main-mistake" src="img/wrong-answer
   }
 
   bind() {
+    this.timerContainer = this.element.querySelectorAll(`span`);
+    if (this.timer.value <= 30) {
+      this.blinkTimer();
+    }
   }
 
+  blinkTimer() {
+    Array.from(this.timerContainer).forEach((it, i) => {
+      it.style.color = `red`;
+      if (i !== 1) {
+        setTimeout(() => {
+          it.style.color = `transparent`;
+        }, 500);
+      }
+    });
+  }
 }
