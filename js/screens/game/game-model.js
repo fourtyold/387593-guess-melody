@@ -9,6 +9,7 @@ export default class GameModel {
   }
 
   updateQuestion() {
+    this.gameQuestion = null;
     this.gameQuestion = this.getQuestion();
   }
 

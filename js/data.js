@@ -14,6 +14,7 @@ const gameData = {
 function Question(gameType) {
   this.answers = [];
   this.text = ``;
+  this.type = gameType;
   if (gameType === QuestionType.ARTIST) {
     this.correctAnswer = null;
     this.src = ``;
