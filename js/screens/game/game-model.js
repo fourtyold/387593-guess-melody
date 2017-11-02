@@ -55,11 +55,9 @@ export default class GameModel {
     answer.status = true;
     answer.time = this.data.gameData.answerTime - this.timer.value;
     this.data.gameData.answerTime = this.timer.value;
-    Array.from(answerFlags).forEach((it, ind) => {
-      if (it.checked) {
-        if (this.gameQuestion.correctAnswers.indexOf(ind) === -1) {
-          answer.status = false;
-        }
+    this.gameQuestion.correctAnswers.forEach((it) => {
+      if (!answerFlags[it].checked) {
+        answer.status = false;
       }
     });
     answer.src = answerLinks;
