@@ -24,11 +24,11 @@ export default class AbstractView {
     return div;
   }
 
-  showScreen(screen) {
+  showScreen() {
     while (mainSection.firstChild) {
       mainSection.firstChild.remove();
     }
-    mainSection.appendChild(screen.element);
+    mainSection.appendChild(this.element);
   }
 
 }

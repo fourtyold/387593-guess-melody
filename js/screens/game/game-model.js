@@ -5,7 +5,9 @@ export default class GameModel {
   constructor(questionList, data) {
     this.questionList = questionList;
     this.data = data;
-    this.timer = getTimer(data.state.time, this.onTimeOut);
+    this.timer = getTimer(data.state.time, () => {
+      this.onTimeOut();
+    });
   }
 
   updateQuestion() {
@@ -40,28 +42,22 @@ export default class GameModel {
 
   getArtistAnswer(artistAnswers, target) {
     const answerNumber = Array.from(artistAnswers).indexOf(target);
-    const answer = Object.create(this.data.userAnswer);
+    const answer = {};
     answer.time = this.data.gameData.answerTime - this.timer.value;
-    if (answerNumber !== this.gameQuestion.correctAnswer) {
-      answer.status = false;
-    }
-    answer.src = this.gameQuestion.answers[answerNumber].src;
+    answer.status = (answerNumber === this.gameQuestion.correctAnswer);
     this.data.gameData.answerTime = this.timer.value;
     return answer;
   }
 
   getGenreAnswer(answerFlags) {
     const answerLinks = [];
-    const answer = Object.create(this.data.userAnswer);
+    const answer = {};
     answer.status = true;
     answer.time = this.data.gameData.answerTime - this.timer.value;
     this.data.gameData.answerTime = this.timer.value;
-    Array.from(answerFlags).forEach((it, ind) => {
-      if (it.checked) {
-        if (this.gameQuestion.correctAnswers.indexOf(ind) === -1) {
-          answer.status = false;
-        }
-        answerLinks.push(this.gameQuestion.answers[ind].src);
+    this.gameQuestion.correctAnswers.forEach((it) => {
+      if (!answerFlags[it].checked) {
+        answer.status = false;
       }
     });
     answer.src = answerLinks;
@@ -72,6 +68,15 @@ export default class GameModel {
     this.data.gameData.mistakes = 0;
     this.data.gameData.stat = [];
     this.data.gameData.answerTime = this.data.state.time;
+    this.timer.value = this.data.state.time;
+  }
+
+  getHistory(loadedData) {
+    const scoreHistory = [];
+    loadedData.forEach((it) => {
+      scoreHistory.push(it.score);
+    });
+    return scoreHistory;
   }
 
   onArtistAnswer() {}
