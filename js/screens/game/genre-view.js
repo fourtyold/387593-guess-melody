@@ -11,7 +11,7 @@ export default class GenreView extends AbstractView {
 
     return `
   <div class="main-wrap">
-      <h2 class="title">${this.gameQuestion.text[0] + this.gameQuestion.answers[this.gameQuestion.correctAnswers[0]].genre + this.gameQuestion.text[1]} ${this.gameQuestion.correctAnswers[0] + 1}</h2>
+      <h2 class="title">${this.gameQuestion.text} ${this.gameQuestion.correctAnswers}</h2>
       <form class="genre">
        ${[...this.gameQuestion.answers].map((answer, ind) =>
     `<div class="genre-answer">

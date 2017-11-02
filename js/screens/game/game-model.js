@@ -2,43 +2,40 @@ import {Question} from '../../data.js';
 import getTimer from '../../utils/timer.js';
 
 export default class GameModel {
-  constructor(data) {
+  constructor(questionList, data) {
+    this.questionList = questionList;
     this.data = data;
     this.timer = getTimer(data.state.time, this.onTimeOut);
   }
 
   updateQuestion() {
-    this.gameQuestion = (this.data.gameData.stat.length < this.data.state.artistScreens) ? (this.getQuestion(this.data.musicList, this.data.state.artist)) : (this.getQuestion(this.data.musicList, this.data.state.genre));
+    this.gameQuestion = null;
+    this.gameQuestion = this.getQuestion();
   }
 
-  getQuestion(music, gameType) {
-    const gameQuestion = new Question(gameType);
-    const songs = music.slice();
-    for (let i = 0; i < gameType; i++) {
-      const song = songs.splice(Math.floor(Math.random() * songs.length), 1);
-      gameQuestion.answers.push(song[0]);
-    }
-    if (gameQuestion.correctAnswer === null) {
-      gameQuestion.correctAnswer = Math.floor(Math.random() * gameQuestion.answers.length);
+  getQuestion() {
+    const thisQuestion = this.questionList[this.data.gameData.stat.length];
+    const questionType = thisQuestion.type;
+    const gameQuestion = new Question(questionType);
+    gameQuestion.text = thisQuestion.question;
+    if (questionType === this.data.QuestionType.ARTIST) {
+      gameQuestion.src = thisQuestion.src;
+      thisQuestion.answers.forEach((it, i) => {
+        gameQuestion.answers.push(it);
+        if (it.isCorrect) {
+          gameQuestion.correctAnswer = i;
+        }
+      });
     } else {
-      const genre = gameQuestion.answers[Math.floor(Math.random() * gameQuestion.answers.length)].genre;
-      gameQuestion.answers.forEach((answer, index) => {
-        if (answer.genre === genre) {
-          gameQuestion.correctAnswers.push(index);
+      const genre = thisQuestion.genre;
+      thisQuestion.answers.forEach((it, i) => {
+        gameQuestion.answers.push(it);
+        if (it.genre === genre) {
+          gameQuestion.correctAnswers.push(i);
         }
       });
     }
     return gameQuestion;
-  }
-
-  onArtistAnswer(evt) {
-    let target = false;
-    if (evt.target.classList.contains(`main-answer-preview`)) {
-      target = evt.target.parentNode;
-    } else if (evt.target.classList.contains(`main-answer`)) {
-      target = evt.target;
-    }
-    return target;
   }
 
   getArtistAnswer(artistAnswers, target) {
@@ -77,6 +74,7 @@ export default class GameModel {
     this.data.gameData.answerTime = this.data.state.time;
   }
 
+  onArtistAnswer() {}
   playerHandler() {}
   genreFlagsHandler() {}
   playersHandler() {}

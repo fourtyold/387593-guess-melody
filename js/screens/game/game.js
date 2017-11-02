@@ -1,22 +1,22 @@
 import GameView from './game-view.js';
 import GameModel from './game-model.js';
-import {state, gameData, musicList, userAnswer, Question, gameResult} from '../../data.js';
+import {state, gameData, userAnswer, Question, gameResult, QuestionType} from '../../data.js';
 import Application from '../../application.js';
 import ResultModel from '../result/result-model.js';
-import {togglePlayerControl} from '../../utils/util';
+import {togglePlayerControl} from '../../utils/util.js';
 
 const initialData = {
   state,
   gameData,
-  musicList,
   userAnswer,
   Question,
-  gameResult
+  gameResult,
+  QuestionType
 };
 
 class GameScreen {
-  constructor(data = initialData) {
-    this.model = new GameModel(data);
+  constructor(questionList, data = initialData) {
+    this.model = new GameModel(questionList, data);
     this.view = new GameView(this.model);
   }
 
@@ -27,7 +27,9 @@ class GameScreen {
     this.view.showScreen(this.view);
     this.view.updateScreen();
     this.view.showScreen(this.view);
-    this.view.newPlayer.play();
+    if (this.view.newPlayer) {
+      this.view.newPlayer.play();
+    }
     this.tick();
   }
 
@@ -38,6 +40,17 @@ class GameScreen {
     this.model.playerHandler = (artistPlayer, playerControl) => this.playerHandler(artistPlayer, playerControl);
     this.model.genreFlagsHandler = (answerFlags, genreAnswerSend) => this.genreFlagsHandler(answerFlags, genreAnswerSend);
     this.model.playersHandler = (evt, genrePlayers, playersControls) => this.playersHandler(evt, genrePlayers, playersControls);
+    this.model.onArtistAnswer = (evt) => this.onArtistAnswer(evt);
+  }
+
+  onArtistAnswer(evt) {
+    let target = false;
+    if (evt.target.classList.contains(`main-answer-preview`)) {
+      target = evt.target.parentNode;
+    } else if (evt.target.classList.contains(`main-answer`)) {
+      target = evt.target;
+    }
+    return target;
   }
 
   playerHandler(artistPlayer, playerControl) {
@@ -71,7 +84,7 @@ class GameScreen {
 
   showNextGameScreen(answer) {
     this.model.data.gameData.stat.push(answer);
-    if (this.model.data.gameData.stat.length < this.model.data.state.totalScreens) {
+    if (this.model.data.gameData.stat.length < this.model.questionList.length) {
       this.model.updateQuestion();
       this.view.updateScreen();
       this.view.showScreen(this.view);
@@ -91,7 +104,7 @@ class GameScreen {
   }
 
   artistAnswerHandler(evt, artistAnswers) {
-    const target = this.model.onArtistAnswer(evt);
+    const target = this.onArtistAnswer(evt);
     if (target) {
       const answer = this.model.getArtistAnswer(artistAnswers, target);
       if (answer.status) {
@@ -141,4 +154,4 @@ class GameScreen {
 
 }
 
-export default new GameScreen();
+export default GameScreen;

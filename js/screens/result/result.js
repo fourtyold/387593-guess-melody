@@ -8,7 +8,7 @@ class ResultScreen {
     this.model = new ResultModel(result);
     this.view = new ResultView(this.model);
     this.view.replayHandler = () => {
-      Application.showWelcome();
+      Application.showGame();
     };
     this.view.showScreen(this.view);
   }

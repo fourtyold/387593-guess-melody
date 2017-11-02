@@ -1,3 +1,4 @@
 import Application from './application.js';
 
-Application.init();
+// Application.init();
+Application.getDataAndInit();

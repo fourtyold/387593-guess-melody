@@ -28,7 +28,7 @@ export default class GameView extends AbstractView {
 
   updateScreen() {
     this.updateHeader();
-    const view = (this.model.data.gameData.stat.length < this.model.data.state.artistScreens) ? (new ArtistView(this.model.gameQuestion)) : (new GenreView(this.model.gameQuestion));
+    const view = (this.model.gameQuestion.type === this.model.data.QuestionType.ARTIST) ? (new ArtistView(this.model.gameQuestion)) : (new GenreView(this.model.gameQuestion));
     view.playerHandler = (artistPlayer, playerControl) => this.model.playerHandler(artistPlayer, playerControl);
     view.artistAnswerHandler = (evt, artistAnswers) => this.model.artistAnswerHandler(evt, artistAnswers);
     view.playersHandler = (evt, genrePlayers, playersControls) => this.model.playersHandler(evt, genrePlayers, playersControls);
