@@ -34,12 +34,6 @@ function ResultObject() {
   this.totalPlace = null;
 }
 
-const userAnswer = {
-  status: true,
-  src: null,
-  time: null
-};
-
 const gameResult = {
   limit: 1,
   time: 2,
@@ -51,4 +45,10 @@ const QuestionType = {
   ARTIST: `artist`
 };
 
-export {state, gameData, userAnswer, Question, gameResult, ResultObject, QuestionType};
+const NetData = {
+  SERVER_URL: `https://es.dump.academy/guess-melody`,
+  CRYPT_KEY: `3748`,
+  DEFAULT_USERNAME: `Mikhail387593`
+};
+
+export {state, gameData, Question, gameResult, ResultObject, QuestionType, NetData};

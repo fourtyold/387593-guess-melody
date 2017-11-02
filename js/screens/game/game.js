@@ -1,14 +1,14 @@
 import GameView from './game-view.js';
 import GameModel from './game-model.js';
-import {state, gameData, userAnswer, Question, gameResult, QuestionType} from '../../data.js';
+import {state, gameData, Question, gameResult, QuestionType, NetData} from '../../data.js';
 import Application from '../../application.js';
 import ResultModel from '../result/result-model.js';
 import {togglePlayerControl} from '../../utils/util.js';
+import Loader from '../../utils/loader.js';
 
 const initialData = {
   state,
   gameData,
-  userAnswer,
   Question,
   gameResult,
   QuestionType
@@ -24,9 +24,9 @@ class GameScreen {
     this.bind();
     this.model.resetGameData();
     this.model.updateQuestion();
-    this.view.showScreen(this.view);
+    this.view.showScreen();
     this.view.updateScreen();
-    this.view.showScreen(this.view);
+    this.view.showScreen();
     if (this.view.newPlayer) {
       this.view.newPlayer.play();
     }
@@ -36,11 +36,11 @@ class GameScreen {
   bind() {
     this.model.artistAnswerHandler = (evt, artistAnswers) => this.artistAnswerHandler(evt, artistAnswers);
     this.model.genreAnswerHandler = (evt, answerFlags) => this.genreAnswerHandler(evt, answerFlags);
-    this.model.onTimeOut = () => this.onTimeOut();
     this.model.playerHandler = (artistPlayer, playerControl) => this.playerHandler(artistPlayer, playerControl);
     this.model.genreFlagsHandler = (answerFlags, genreAnswerSend) => this.genreFlagsHandler(answerFlags, genreAnswerSend);
     this.model.playersHandler = (evt, genrePlayers, playersControls) => this.playersHandler(evt, genrePlayers, playersControls);
     this.model.onArtistAnswer = (evt) => this.onArtistAnswer(evt);
+    this.model.onTimeOut = () => this.onTimeOut();
   }
 
   onArtistAnswer(evt) {
@@ -58,13 +58,9 @@ class GameScreen {
   }
 
   genreFlagsHandler(answerFlags, genreAnswerSend) {
-    genreAnswerSend.disabled = true;
-    for (let i = 0; i < answerFlags.length; i++) {
-      if (answerFlags[i].checked) {
-        genreAnswerSend.disabled = false;
-        break;
-      }
-    }
+    genreAnswerSend.disabled = !Array.from(answerFlags).some((flag) => {
+      return flag.checked;
+    });
   }
 
   playersHandler(evt, genrePlayers, playersControls) {
@@ -87,18 +83,22 @@ class GameScreen {
     if (this.model.data.gameData.stat.length < this.model.questionList.length) {
       this.model.updateQuestion();
       this.view.updateScreen();
-      this.view.showScreen(this.view);
+      this.view.showScreen();
       if (this.view.newPlayer) {
         this.view.newPlayer.play();
       }
     } else {
-      this.showResultScreen(this.model.data.gameResult.score);
+      Loader.downloadResults(`${NetData.SERVER_URL}/stats/${NetData.DEFAULT_USERNAME}`, this.model.getHistory, (history) => {
+        this.model.data.gameData.history = history;
+        this.showResultScreen(this.model.data.gameResult.score);
+      });
+      // this.showResultScreen(this.model.data.gameResult.score);
     }
   }
 
   showResultScreen(screenType) {
     this.model.data.gameData.result = screenType;
-    this.stopTimer();
+    clearTimeout(this.timer);
     const resultObj = ResultModel.getResult(this.model.data.gameData);
     Application.showStats(resultObj);
   }
@@ -132,24 +132,15 @@ class GameScreen {
   }
 
   onTimeOut() {
-    this.model.data.gameData.mistakes = 0;
-    this.model.data.gameData.stat = [];
-    this.model.data.gameData.result = this.model.data.gameResult.time;
-    const resultObj = ResultModel.getResult(this.model.data.gameData);
-    Application.showStats(resultObj);
+    this.showResultScreen(this.model.data.gameResult.time);
   }
 
   tick() {
     this.model.timer.tick();
     if (this.model.timer.value > 0) {
       this.view.updateHeader();
+      this.timer = setTimeout(() => this.tick(), 1000);
     }
-    this.timer = setTimeout(() => this.tick(), 1000);
-  }
-
-  stopTimer() {
-    clearTimeout(this.timer);
-    this.model.timer.value = this.model.data.state.time;
   }
 
 }

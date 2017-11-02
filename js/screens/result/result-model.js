@@ -6,6 +6,7 @@ export default class ResultModel {
   }
 
   static getResult(answerObj) {
+
     const resultObj = new ResultObject();
     let time = 0;
     let answers = 0;
@@ -16,9 +17,7 @@ export default class ResultModel {
         answers++;
       }
     });
-    if (answerObj.stat.length) {
-      answerObj.history.push(score);
-    }
+    answerObj.history.push(score);
     answerObj.history.sort((a, b) => {
       return b - a;
     });
@@ -54,4 +53,5 @@ export default class ResultModel {
     });
     return score;
   }
+
 }

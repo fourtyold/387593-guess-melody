@@ -1,9 +1,12 @@
 import welcomeScreen from './screens/welcome/welcome.js';
 import GameScreen from './screens/game/game.js';
 import resultScreen from './screens/result/result.js';
-import {ResultObject} from './data.js';
+import {ResultObject, gameResult, NetData} from './data.js';
 import Loader from './utils/loader.js';
-const CRYPT_KEY = `3748`;
+
+// const CRYPT_KEY = `3748`;
+// const SERVER_URL = `https://es.dump.academy/guess-melody`;
+// const DEFAULT_USERNAME = `Mikhail387593`;
 
 const ControllerId = {
   WELCOME: ``,
@@ -26,7 +29,7 @@ const loadState = (dataString) => {
 export default class Application {
 
   static getDataAndInit() {
-    Loader.downloadData(Application.init);
+    Loader.downloadData(`${NetData.SERVER_URL}/questions`, Application.init);
   }
 
   static init(loadedData) {
@@ -55,15 +58,21 @@ export default class Application {
     }
   }
 
-  static showWelcome() {
-    location.hash = ControllerId.WELCOME;
-  }
+  // static showWelcome() {
+  //   location.hash = ControllerId.WELCOME;
+  // }
 
   static showGame() {
     location.hash = ControllerId.GAME;
   }
 
   static showStats(result) {
+    if (result.userResult === gameResult.score) {
+      const dataToSend = {};
+      dataToSend.time = result.totalTime;
+      dataToSend.score = result.userScore;
+      Loader.uploadResults(`${NetData.SERVER_URL}/stats/${NetData.DEFAULT_USERNAME}`, dataToSend);
+    }
     location.hash = `${ControllerId.RESULT}?${saveState(this.cryptResult(result))}`;
   }
 
@@ -72,12 +81,12 @@ export default class Application {
     Object.keys(resultObj).forEach((it) => {
       cryptedStr.push(resultObj[it]);
     });
-    return cryptedStr.join(CRYPT_KEY);
+    return cryptedStr.join(NetData.CRYPT_KEY);
   }
 
   static decryptResult(cryptedStr) {
     const resultObj = new ResultObject();
-    const cryptedArr = cryptedStr.split(CRYPT_KEY);
+    const cryptedArr = cryptedStr.split(NetData.CRYPT_KEY);
     Object.keys(resultObj).forEach((it, i) => {
       resultObj[it] = +cryptedArr[i];
     });
