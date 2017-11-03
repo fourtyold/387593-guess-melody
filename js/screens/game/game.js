@@ -1,16 +1,15 @@
 import GameView from './game-view.js';
 import GameModel from './game-model.js';
-import {state, gameData, Question, gameResult, QuestionType, NetData} from '../../data.js';
+import {State, gameData, GameResult, QuestionType, NetData} from '../../data.js';
 import Application from '../../application.js';
 import ResultModel from '../result/result-model.js';
 import {togglePlayerControl} from '../../utils/util.js';
 import Loader from '../../utils/loader.js';
 
 const initialData = {
-  state,
+  State,
   gameData,
-  Question,
-  gameResult,
+  GameResult,
   QuestionType
 };
 
@@ -88,11 +87,11 @@ class GameScreen {
         this.view.newPlayer.play();
       }
     } else {
-      Loader.downloadResults(`${NetData.SERVER_URL}/stats/${NetData.DEFAULT_USERNAME}`, this.model.getHistory, (history) => {
+      const dataToSend = ResultModel.getResultToLoad(this.model.data.gameData);
+      Loader.loadResults(`${NetData.SERVER_URL}/stats/${NetData.DEFAULT_USERNAME}`, dataToSend, this.model.getHistory, (history) => {
         this.model.data.gameData.history = history;
-        this.showResultScreen(this.model.data.gameResult.score);
+        this.showResultScreen(this.model.data.GameResult.SCORE);
       });
-      // this.showResultScreen(this.model.data.gameResult.score);
     }
   }
 
@@ -109,11 +108,11 @@ class GameScreen {
       const answer = this.model.getArtistAnswer(artistAnswers, target);
       if (answer.status) {
         this.showNextGameScreen(answer);
-      } else if (this.model.data.gameData.mistakes < this.model.data.state.maxMistakes) {
+      } else if (this.model.data.gameData.mistakes < this.model.data.State.MAX_MISTAKES) {
         this.model.data.gameData.mistakes++;
         this.showNextGameScreen(answer);
       } else {
-        this.showResultScreen(this.model.data.gameResult.limit);
+        this.showResultScreen(this.model.data.GameResult.LIMIT);
       }
     }
   }
@@ -123,16 +122,16 @@ class GameScreen {
     const answer = this.model.getGenreAnswer(answerFlags);
     if (answer.status) {
       this.showNextGameScreen(answer);
-    } else if (this.model.data.gameData.mistakes < this.model.data.state.maxMistakes) {
+    } else if (this.model.data.gameData.mistakes < this.model.data.State.MAX_MISTAKES) {
       this.model.data.gameData.mistakes++;
       this.showNextGameScreen(answer);
     } else {
-      this.showResultScreen(this.model.data.gameResult.limit);
+      this.showResultScreen(this.model.data.GameResult.LIMIT);
     }
   }
 
   onTimeOut() {
-    this.showResultScreen(this.model.data.gameResult.time);
+    this.showResultScreen(this.model.data.GameResult.TIME);
   }
 
   tick() {

@@ -27,7 +27,7 @@ export default class ArtistView extends AbstractView {
           <input class="main-answer-r" type="radio" id="answer-1" name="answer" value="val-1"/>
           <label class="main-answer" for="answer-1">
             <img class="main-answer-preview" src="${answer.image.url}"
-                 alt="Пелагея" width="${answer.image.width}" height="${answer.image.height}">
+                 alt="${answer.title}" width="${answer.image.width}" height="${answer.image.height}">
             ${answer.title}
           </label>
         </div>`).join(``)}

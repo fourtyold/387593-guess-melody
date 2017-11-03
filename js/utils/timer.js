@@ -1,4 +1,4 @@
-export default function getTimer(initValue, callback) {
+const getTimer = (initValue, callback) => {
   return {
     value: initValue,
     tick() {
@@ -10,4 +10,6 @@ export default function getTimer(initValue, callback) {
       }
     }
   };
-}
+};
+
+export default getTimer;

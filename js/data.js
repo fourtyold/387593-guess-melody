@@ -1,6 +1,10 @@
-const state = {
-  time: 300,
-  maxMistakes: 3,
+const State = {
+  TIME: 300,
+  MAX_MISTAKES: 3,
+  SLOW_ANSWER: 30,
+  MISTAKE_PRICE: 2,
+  ANSWERS_NUMBER: 10,
+  MAX_SCORE: 20
 };
 
 const gameData = {
@@ -8,36 +12,14 @@ const gameData = {
   stat: [],
   mistakes: 0,
   result: null,
-  history: []
+  history: [],
+  loadedData: []
 };
 
-function Question(gameType) {
-  this.answers = [];
-  this.text = ``;
-  this.type = gameType;
-  if (gameType === QuestionType.ARTIST) {
-    this.correctAnswer = null;
-    this.src = ``;
-  } else {
-    this.correctAnswers = [];
-  }
-}
-
-function ResultObject() {
-  this.userResult = null;
-  this.userScore = null;
-  this.mistakesCnt = null;
-  this.totalTime = null;
-  this.fastAnswers = null;
-  this.successPercent = null;
-  this.currentPlace = null;
-  this.totalPlace = null;
-}
-
-const gameResult = {
-  limit: 1,
-  time: 2,
-  score: 3
+const GameResult = {
+  LIMIT: 0,
+  TIME: 1,
+  SCORE: 2
 };
 
 const QuestionType = {
@@ -51,4 +33,4 @@ const NetData = {
   DEFAULT_USERNAME: `Mikhail387593`
 };
 
-export {state, gameData, Question, gameResult, ResultObject, QuestionType, NetData};
+export {State, gameData, GameResult, QuestionType, NetData};

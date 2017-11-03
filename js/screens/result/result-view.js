@@ -1,5 +1,5 @@
 import AbstractView from '../../abstractview.js';
-import {gameResult} from '../../data.js';
+import {GameResult} from '../../data.js';
 
 export default class ResultView extends AbstractView {
 
@@ -30,13 +30,13 @@ export default class ResultView extends AbstractView {
   getResultTitle() {
     let content;
     switch (this.resultObj.resultObj.userResult) {
-      case gameResult.limit:
+      case GameResult.LIMIT:
         content = `Какая жалость!`;
         break;
-      case gameResult.time:
+      case GameResult.TIME:
         content = `Увы и ах!`;
         break;
-      case gameResult.score:
+      case GameResult.SCORE:
         content = `Вы настоящий меломан!`;
         break;
     }
@@ -46,13 +46,13 @@ export default class ResultView extends AbstractView {
   getResultMainStat() {
     let content;
     switch (this.resultObj.resultObj.userResult) {
-      case gameResult.limit:
+      case GameResult.LIMIT:
         content = `У вас закончились все попытки.<br>Ничего, повезёт в следующий раз!`;
         break;
-      case gameResult.time:
+      case GameResult.TIME:
         content = `Время вышло!<br>Вы не успели отгадать все мелодии`;
         break;
-      case gameResult.score:
+      case GameResult.SCORE:
         content = `За ${this.markupObj.minutesNum} ${this.markupObj.minutesForm} и ${this.markupObj.secondsNum} ${this.markupObj.secondsForm}
        <br>вы набрали ${this.markupObj.scoreNum} ${this.markupObj.scoreForm} (${this.markupObj.fastNum} ${this.markupObj.fastForm})
        <br>совершив ${this.markupObj.mistakesNum} ${this.markupObj.mistakesForm}`;
@@ -64,11 +64,11 @@ export default class ResultView extends AbstractView {
   getResultMainComparison() {
     let content;
     switch (this.resultObj.resultObj.userResult) {
-      case gameResult.limit:
-      case gameResult.time:
+      case GameResult.LIMIT:
+      case GameResult.TIME:
         content = ``;
         break;
-      case gameResult.score:
+      case GameResult.SCORE:
         content = `Вы заняли ${this.resultObj.resultObj.currentPlace} место из ${this.resultObj.resultObj.totalPlace}. Это лучше чем у ${this.resultObj.resultObj.successPercent}% игроков`;
         break;
     }
@@ -78,11 +78,11 @@ export default class ResultView extends AbstractView {
   getButtonText() {
     let content;
     switch (this.resultObj.resultObj.userResult) {
-      case gameResult.limit:
-      case gameResult.time:
+      case GameResult.LIMIT:
+      case GameResult.TIME:
         content = `Попробовать ещё раз`;
         break;
-      case gameResult.score:
+      case GameResult.SCORE:
         content = `Сыграть ещё раз`;
         break;
     }
