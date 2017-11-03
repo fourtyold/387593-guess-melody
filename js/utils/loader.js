@@ -71,27 +71,12 @@ export default class Loader {
   }
 
   static _downloadImage(list) {
-    let imgCounter = 0;
-    const onDataLoad = (media) => {
-      imgCounter += 1;
-      console.log(media);
-      if (imgCounter === list.length) {
-        console.log(`IMAGE READY`);
-      }
-    };
     const onLoadError = (media) => {
-      imgCounter += 1;
       this._changeImgUrl(media, gameData.loadedData);
-      if (imgCounter === list.length) {
-        console.log(`IMAGE LOADED`);
-      }
     };
     list.forEach((it) => {
       let media = new Image();
       media.src = it;
-      media.onload = () => {
-        onDataLoad(media);
-      };
       media.onerror = () => {
         onLoadError(media);
       };
@@ -100,9 +85,8 @@ export default class Loader {
 
   static _downloadAudio(list, callback) {
     let audioCounter = 0;
-    const onDataLoad = (media) => {
+    const onDataLoad = () => {
       audioCounter += 1;
-      console.log(media);
       if (audioCounter === list.length) {
         Application.init(gameData.loadedData);
         callback();
@@ -119,7 +103,7 @@ export default class Loader {
     list.forEach((it) => {
       let media = new Audio(it);
       media.oncanplaythrough = () => {
-        onDataLoad(media);
+        onDataLoad();
       };
       media.onerror = () => {
         onLoadError(media);
