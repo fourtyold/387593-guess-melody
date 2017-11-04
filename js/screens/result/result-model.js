@@ -1,4 +1,5 @@
-import {ResultObject} from '../../data.js';
+import {State} from '../../data.js';
+import ResultObject from '../../utils/result-object.js';
 
 export default class ResultModel {
   constructor(result) {
@@ -10,14 +11,13 @@ export default class ResultModel {
     const resultObj = new ResultObject();
     let time = 0;
     let answers = 0;
-    const score = this.getScore(answerObj);
+    const score = this._getScore(answerObj);
     answerObj.stat.forEach((it) => {
       time += it.time;
       if (it.time < 30) {
         answers++;
       }
     });
-    answerObj.history.push(score);
     answerObj.history.sort((a, b) => {
       return b - a;
     });
@@ -32,26 +32,27 @@ export default class ResultModel {
     return resultObj;
   }
 
-  static getScore(answerObj) {
-    const slowAns = 30;
-    const maxMistakes = 4;
-    const mistakePrice = 2;
-    const answersNumber = 10;
-    const maxScore = 20;
-
-    let score = maxScore;
-
-    if (answerObj.mistakes === maxMistakes || answerObj.stat.length < answersNumber - 1) {
+  static _getScore(answerObj) {
+    let score = State.MAX_SCORE;
+    if (answerObj.mistakes > State.MAX_MISTAKES || answerObj.stat.length < State.ANSWERS_NUMBER - 1) {
       return -1;
     } else {
-      score -= mistakePrice * answerObj.mistakes;
+      score -= State.MISTAKE_PRICE * answerObj.mistakes;
     }
     answerObj.stat.forEach((it) => {
-      if (it.time >= slowAns) {
+      if (it.time >= State.SLOW_ANSWER) {
         score--;
       }
     });
     return score;
   }
 
+  static getResultToLoad(answerObj) {
+    const scoreToLoad = this._getScore(answerObj);
+    let timeToLoad = 0;
+    answerObj.stat.forEach((it) => {
+      timeToLoad += it.time;
+    });
+    return {score: scoreToLoad, time: timeToLoad};
+  }
 }

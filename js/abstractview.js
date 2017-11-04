@@ -5,7 +5,7 @@ export default class AbstractView {
   get template() {}
 
   render() {
-    return this.getElementFromTemplate(this.template.trim());
+    return AbstractView._getElementFromTemplate(this.template.trim());
   }
 
   bind() {}
@@ -18,7 +18,7 @@ export default class AbstractView {
     return this._element;
   }
 
-  getElementFromTemplate(str) {
+  static _getElementFromTemplate(str) {
     let div = document.createElement(`div`);
     div.appendChild(document.createRange().createContextualFragment(str));
     return div;

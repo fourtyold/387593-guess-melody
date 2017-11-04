@@ -11,7 +11,7 @@ export default class ArtistView extends AbstractView {
 
     return `
     <div class="main-wrap">
-      <h2 class="title main-title">${this.gameQuestion.text} ${this.gameQuestion.correctAnswer + 1}</h2>
+      <h2 class="title main-title">${this.gameQuestion.text}</h2>
       <div class="player-wrapper">
         <div class="player">
           <audio src="${this.gameQuestion.src}"></audio>
@@ -27,7 +27,7 @@ export default class ArtistView extends AbstractView {
           <input class="main-answer-r" type="radio" id="answer-1" name="answer" value="val-1"/>
           <label class="main-answer" for="answer-1">
             <img class="main-answer-preview" src="${answer.image.url}"
-                 alt="Пелагея" width="${answer.image.width}" height="${answer.image.height}">
+                 alt="${answer.title}" width="${answer.image.width}" height="${answer.image.height}">
             ${answer.title}
           </label>
         </div>`).join(``)}

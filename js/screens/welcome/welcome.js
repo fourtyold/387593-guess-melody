@@ -10,8 +10,9 @@ class WelcomeScreen {
     this.view.mainPlayClick = () => {
       Application.showGame();
     };
-    this.view.showScreen(this.view);
+    this.view.showScreen();
   }
+
 }
 
 export default new WelcomeScreen();

@@ -16,6 +16,7 @@ export default class WelcomeView extends AbstractView {
   bind() {
     this.mainPlay = this.element.querySelector(`.main-play`);
     this.mainPlay.addEventListener(`click`, this.mainPlayClick);
+    this.mainPlay.style.display = `none`;
   }
 
   mainPlayClick() {}
