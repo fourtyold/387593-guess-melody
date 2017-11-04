@@ -10,7 +10,7 @@ class ResultScreen {
     this.view.replayHandler = () => {
       Application.showGame();
     };
-    this.view.showScreen(this.view);
+    this.view.showScreen();
   }
 }
 

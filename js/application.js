@@ -2,7 +2,7 @@ import welcomeScreen from './screens/welcome/welcome.js';
 import GameScreen from './screens/game/game.js';
 import resultScreen from './screens/result/result.js';
 import {NetData} from './data.js';
-import Loader from './utils/loader.js';
+import GameLoader from './utils/loader.js';
 import ResultObject from './utils/result-object.js';
 
 const ControllerId = {
@@ -11,22 +11,14 @@ const ControllerId = {
   RESULT: `result`
 };
 
-const saveState = (state) => {
-  return JSON.stringify(state);
-};
-
-const loadState = (dataString) => {
-  try {
-    return JSON.parse(dataString);
-  } catch (e) {
-    return false;
-  }
-};
-
 export default class Application {
 
-  static getDataAndInit() {
-    Loader.downloadData(`${NetData.SERVER_URL}/questions`, Application.init, Application._allowToPlay);
+  constructor() {
+    this.gameLoader = new GameLoader();
+  }
+
+  getDataAndInit() {
+    this.gameLoader.downloadData(`${NetData.SERVER_URL}/questions`, Application.init, Application._allowToPlay);
   }
 
   static init(loadedData) {
@@ -48,9 +40,9 @@ export default class Application {
     const controller = Application.routes[id];
     if (controller) {
       if (data) {
-        controller.init(this.decryptResult(loadState(data)));
+        controller.init(this.decryptResult(this._loadState(data)));
       } else {
-        controller.init(loadState(data));
+        controller.init(this._loadState(data));
       }
     }
   }
@@ -60,7 +52,7 @@ export default class Application {
   }
 
   static showStats(result) {
-    location.hash = `${ControllerId.RESULT}?${saveState(this.cryptResult(result))}`;
+    location.hash = `${ControllerId.RESULT}?${this._saveState(this.cryptResult(result))}`;
   }
 
   static cryptResult(resultObj) {
@@ -82,5 +74,17 @@ export default class Application {
 
   static _allowToPlay() {
     document.querySelector(`.main-play`).removeAttribute(`style`);
+  }
+
+  static _saveState(state) {
+    return JSON.stringify(state);
+  }
+
+  static _loadState(dataString) {
+    try {
+      return JSON.parse(dataString);
+    } catch (e) {
+      return false;
+    }
   }
 }

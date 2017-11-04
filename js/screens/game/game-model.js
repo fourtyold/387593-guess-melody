@@ -1,21 +1,21 @@
 import Question from '../../utils/question.js';
-import getTimer from '../../utils/timer.js';
+import Timer from '../../utils/timer.js';
 
 export default class GameModel {
   constructor(questionList, data) {
     this.questionList = questionList;
     this.data = data;
-    this.timer = getTimer(data.State.TIME, () => {
+    this.timer = new Timer(data.State.TIME, () => {
       this.onTimeOut();
     });
   }
 
   updateQuestion() {
     this.gameQuestion = null;
-    this.gameQuestion = this.getQuestion();
+    this.gameQuestion = this._getQuestion();
   }
 
-  getQuestion() {
+  _getQuestion() {
     const thisQuestion = this.questionList[this.data.gameData.stat.length];
     const questionType = thisQuestion.type;
     const gameQuestion = new Question(questionType);
@@ -71,7 +71,7 @@ export default class GameModel {
     this.timer.value = this.data.State.TIME;
   }
 
-  getHistory(loadedData) {
+  static getHistory(loadedData) {
     const scoreHistory = [];
     loadedData.forEach((it) => {
       scoreHistory.push(it.score);

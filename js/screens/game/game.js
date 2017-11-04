@@ -4,7 +4,7 @@ import {State, gameData, GameResult, QuestionType, NetData} from '../../data.js'
 import Application from '../../application.js';
 import ResultModel from '../result/result-model.js';
 import {togglePlayerControl} from '../../utils/util.js';
-import Loader from '../../utils/loader.js';
+import GameLoader from '../../utils/loader.js';
 
 const initialData = {
   State,
@@ -88,7 +88,7 @@ class GameScreen {
       }
     } else {
       const dataToSend = ResultModel.getResultToLoad(this.model.data.gameData);
-      Loader.loadResults(`${NetData.SERVER_URL}/stats/${NetData.DEFAULT_USERNAME}`, dataToSend, this.model.getHistory, (history) => {
+      GameLoader.loadResults(`${NetData.SERVER_URL}/stats/${NetData.DEFAULT_USERNAME}`, dataToSend, GameModel.getHistory, (history) => {
         this.model.data.gameData.history = history;
         this.showResultScreen(this.model.data.GameResult.SCORE);
       });

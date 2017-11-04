@@ -6,17 +6,17 @@ export default class ResultView extends AbstractView {
   constructor(model) {
     super();
     this.resultObj = model;
-    this.markupObj = this.getScoreMarkup();
+    this.markupObj = this._getScoreMarkup();
   }
 
   get template() {
 
     return `
     <section class="logo" title="Угадай мелодию"><h1>Угадай мелодию</h1></section>
-    <h2 class="title">${this.getResultTitle()}</h2>
-    <div class="main-stat">${this.getResultMainStat()}</div>
-    <span class="main-comparison">${this.getResultMainComparison()}</span>
-    <span role="button" tabindex="0" class="main-replay">${this.getButtonText()}</span>
+    <h2 class="title">${this._getResultTitle()}</h2>
+    <div class="main-stat">${this._getResultMainStat()}</div>
+    <span class="main-comparison">${this._getResultMainComparison()}</span>
+    <span role="button" tabindex="0" class="main-replay">${this._getButtonText()}</span>
 `;
   }
 
@@ -27,7 +27,7 @@ export default class ResultView extends AbstractView {
 
   replayHandler() {}
 
-  getResultTitle() {
+  _getResultTitle() {
     let content;
     switch (this.resultObj.resultObj.userResult) {
       case GameResult.LIMIT:
@@ -43,7 +43,7 @@ export default class ResultView extends AbstractView {
     return content;
   }
 
-  getResultMainStat() {
+  _getResultMainStat() {
     let content;
     switch (this.resultObj.resultObj.userResult) {
       case GameResult.LIMIT:
@@ -61,7 +61,7 @@ export default class ResultView extends AbstractView {
     return content;
   }
 
-  getResultMainComparison() {
+  _getResultMainComparison() {
     let content;
     switch (this.resultObj.resultObj.userResult) {
       case GameResult.LIMIT:
@@ -75,7 +75,7 @@ export default class ResultView extends AbstractView {
     return content;
   }
 
-  getButtonText() {
+  _getButtonText() {
     let content;
     switch (this.resultObj.resultObj.userResult) {
       case GameResult.LIMIT:
@@ -89,7 +89,7 @@ export default class ResultView extends AbstractView {
     return content;
   }
 
-  getScoreMarkup() {
+  _getScoreMarkup() {
     const markupObj = {};
     markupObj.minutesNum = Math.floor(this.resultObj.resultObj.totalTime / 60);
     markupObj.secondsNum = this.resultObj.resultObj.totalTime % 60;

@@ -8,9 +8,9 @@ const requestSettings = {
   method: `GET`
 };
 
-export default class Loader {
+export default class GameLoader {
 
-  static downloadData(url, startGame, allowToPlay) {
+  downloadData(url, startGame, allowToPlay) {
     return fetch(url, requestSettings)
         .then((resp) => resp.json())
         .then((data) => (gameData.loadedData = data))
@@ -34,22 +34,22 @@ export default class Loader {
         .then((history) => showResult(history));
   }
 
-  static _loadImage(questionArray) {
-    const imgSrcList = this._getImageSrcList(questionArray);
+  _loadImage(questionArray) {
+    const imgSrcList = GameLoader._getImageSrcList(questionArray);
     this._downloadImage(imgSrcList);
   }
 
-  static _loadAudio(questionArray, allowToPlay) {
-    const audioSrcList = this._getAudioSrcList(questionArray);
+  _loadAudio(questionArray, allowToPlay) {
+    const audioSrcList = GameLoader._getAudioSrcList(questionArray);
     this._downloadAudio(audioSrcList, allowToPlay);
   }
 
   static _getImageSrcList(questionArray) {
-    const imgSrcList = [];
+    const imgSrcList = new Set();
     questionArray.forEach((it) => {
       if (it.type === QuestionType.ARTIST) {
         it.answers.forEach((answer) => {
-          imgSrcList.push(answer.image.url);
+          imgSrcList.add(answer.image.url);
         });
       }
     });
@@ -57,22 +57,22 @@ export default class Loader {
   }
 
   static _getAudioSrcList(questionArray) {
-    const audioSrcList = [];
-    questionArray.forEach((it) => {
-      if (it.type === QuestionType.ARTIST) {
-        audioSrcList.push(it.src);
+    const audioSrcList = new Set();
+    for (let i = 0; i < 2; i++) {
+      if (questionArray[i].type === QuestionType.ARTIST) {
+        audioSrcList.add(questionArray[i].src);
       } else {
-        it.answers.forEach((answer) => {
-          audioSrcList.push(answer.src);
+        questionArray[i].answers.forEach((answer) => {
+          audioSrcList.add(answer.src);
         });
       }
-    });
+    }
     return audioSrcList;
   }
 
-  static _downloadImage(list) {
+  _downloadImage(list) {
     const onLoadError = (media) => {
-      this._changeImgUrl(media, gameData.loadedData);
+      GameLoader._changeImgUrl(media, gameData.loadedData);
     };
     list.forEach((it) => {
       let media = new Image();
@@ -83,26 +83,26 @@ export default class Loader {
     });
   }
 
-  static _downloadAudio(list, callback) {
+  _downloadAudio(list, callback) {
     let audioCounter = 0;
     const onDataLoad = () => {
       audioCounter += 1;
-      if (audioCounter === list.length) {
+      if (audioCounter === list.size - 1) {
         Application.init(gameData.loadedData);
         callback();
       }
     };
     const onLoadError = (media) => {
       audioCounter += 1;
-      this._changeAudioUrl(media, gameData.loadedData);
-      if (audioCounter === list.length) {
+      GameLoader._changeAudioUrl(media, gameData.loadedData);
+      if (audioCounter === list.size - 1) {
         Application.init(gameData.loadedData);
         callback();
       }
     };
     list.forEach((it) => {
       let media = new Audio(it);
-      media.oncanplaythrough = () => {
+      media.onloadeddata = () => {
         onDataLoad();
       };
       media.onerror = () => {

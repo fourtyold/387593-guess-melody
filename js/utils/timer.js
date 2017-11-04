@@ -1,15 +1,17 @@
-const getTimer = (initValue, callback) => {
-  return {
-    value: initValue,
-    tick() {
-      if (--this.value > 0) {
-        return true;
-      } else {
-        callback();
-        return false;
-      }
-    }
-  };
-};
+export default class Timer {
+  constructor(value, callback) {
+    this.value = value;
+    this.callback = callback;
+  }
 
-export default getTimer;
+  tick() {
+    if (--this.value > 0) {
+      return true;
+    } else {
+      this.callback();
+      return false;
+    }
+  }
+
+  callback() {}
+}

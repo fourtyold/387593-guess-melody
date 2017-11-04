@@ -19,7 +19,7 @@ export default class GameView extends AbstractView {
     this.levelContainer = this.element.querySelector(`.level-container`);
   }
 
-  update(container, view) {
+  static _update(container, view) {
     while (container.firstChild) {
       container.firstChild.remove();
     }
@@ -34,11 +34,11 @@ export default class GameView extends AbstractView {
     view.playersHandler = (evt, genrePlayers, playersControls) => this.model.playersHandler(evt, genrePlayers, playersControls);
     view.genreFlagsHandler = (answerFlags, genreAnswerSend) => this.model.genreFlagsHandler(answerFlags, genreAnswerSend);
     view.genreAnswerHandler = (evt, answerFlags) => this.model.genreAnswerHandler(evt, answerFlags);
-    this.update(this.levelContainer, view);
+    GameView._update(this.levelContainer, view);
     this.newPlayer = view.newPlayer;
   }
 
   updateHeader() {
-    this.update(this.headerContainer, new HeaderView(this.model.data.gameData.mistakes, this.model.timer));
+    GameView._update(this.headerContainer, new HeaderView(this.model.data.gameData.mistakes, this.model.timer));
   }
 }
