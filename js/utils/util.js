@@ -3,11 +3,11 @@ const togglePlayerControl = (player, playerControl) => {
     player.play();
     playerControl.classList.remove(`player-control--play`);
     playerControl.classList.add(`player-control--pause`);
-  } else {
-    player.pause();
-    playerControl.classList.remove(`player-control--pause`);
-    playerControl.classList.add(`player-control--play`);
+    return;
   }
+  player.pause();
+  playerControl.classList.remove(`player-control--pause`);
+  playerControl.classList.add(`player-control--play`);
 };
 
 export {togglePlayerControl};

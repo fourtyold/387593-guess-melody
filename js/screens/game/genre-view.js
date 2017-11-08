@@ -1,4 +1,4 @@
-import AbstractView from '../../abstractview.js';
+import AbstractView from '../../abstract-view.js';
 
 export default class GenreView extends AbstractView {
 
@@ -11,7 +11,7 @@ export default class GenreView extends AbstractView {
 
     return `
   <div class="main-wrap">
-      <h2 class="title">${this.gameQuestion.text}</h2>
+      <h2 class="title">${this.gameQuestion.text} ${this.gameQuestion.correctAnswers}</h2>
       <form class="genre">
        ${[...this.gameQuestion.answers].map((answer, ind) =>
     `<div class="genre-answer">

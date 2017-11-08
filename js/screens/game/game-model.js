@@ -6,7 +6,7 @@ export default class GameModel {
     this.questionList = questionList;
     this.data = data;
     this.timer = new Timer(data.State.TIME, () => {
-      this.onTimeOut();
+      this.timeOutHandler();
     });
   }
 
@@ -15,27 +15,34 @@ export default class GameModel {
     this.gameQuestion = this._getQuestion();
   }
 
+  _getArtistQuestion(gameQuestion, thisQuestion) {
+    gameQuestion.src = thisQuestion.src;
+    thisQuestion.answers.forEach((it, i) => {
+      gameQuestion.answers.push(it);
+      if (it.isCorrect) {
+        gameQuestion.correctAnswer = i;
+      }
+    });
+  }
+
+  _getGenreQuestion(gameQuestion, thisQuestion) {
+    const genre = thisQuestion.genre;
+    thisQuestion.answers.forEach((it, i) => {
+      gameQuestion.answers.push(it);
+      if (it.genre === genre) {
+        gameQuestion.correctAnswers.push(i);
+      }
+    });
+  }
   _getQuestion() {
     const thisQuestion = this.questionList[this.data.gameData.stat.length];
     const questionType = thisQuestion.type;
     const gameQuestion = new Question(questionType);
     gameQuestion.text = thisQuestion.question;
     if (questionType === this.data.QuestionType.ARTIST) {
-      gameQuestion.src = thisQuestion.src;
-      thisQuestion.answers.forEach((it, i) => {
-        gameQuestion.answers.push(it);
-        if (it.isCorrect) {
-          gameQuestion.correctAnswer = i;
-        }
-      });
+      this._getArtistQuestion(gameQuestion, thisQuestion);
     } else {
-      const genre = thisQuestion.genre;
-      thisQuestion.answers.forEach((it, i) => {
-        gameQuestion.answers.push(it);
-        if (it.genre === genre) {
-          gameQuestion.correctAnswers.push(i);
-        }
-      });
+      this._getGenreQuestion(gameQuestion, thisQuestion);
     }
     return gameQuestion;
   }
@@ -71,19 +78,18 @@ export default class GameModel {
     this.timer.value = this.data.State.TIME;
   }
 
-  static getHistory(loadedData) {
-    const scoreHistory = [];
-    loadedData.forEach((it) => {
-      scoreHistory.push(it.score);
-    });
-    return scoreHistory;
-  }
-
-  onArtistAnswer() {}
+  mainAnswerHandler() {}
   playerHandler() {}
   genreFlagsHandler() {}
   playersHandler() {}
   artistAnswerHandler() {}
   genreAnswerHandler() {}
-  onTimeOut() {}
+  timeOutHandler() {}
+
+  static getHistory(loadedData) {
+    return loadedData.map((it) => {
+      return it.score;
+    });
+  }
+
 }

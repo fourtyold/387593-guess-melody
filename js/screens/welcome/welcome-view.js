@@ -1,4 +1,4 @@
-import AbstractView from '../../abstractview.js';
+import AbstractView from '../../abstract-view.js';
 
 export default class WelcomeView extends AbstractView {
 
@@ -15,9 +15,9 @@ export default class WelcomeView extends AbstractView {
 
   bind() {
     this.mainPlay = this.element.querySelector(`.main-play`);
-    this.mainPlay.addEventListener(`click`, this.mainPlayClick);
+    this.mainPlay.addEventListener(`click`, this.mainPlayHandler);
     this.mainPlay.style.display = `none`;
   }
 
-  mainPlayClick() {}
+  mainPlayHandler() {}
 }

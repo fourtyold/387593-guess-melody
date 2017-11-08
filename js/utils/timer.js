@@ -5,12 +5,11 @@ export default class Timer {
   }
 
   tick() {
-    if (--this.value > 0) {
-      return true;
-    } else {
+    if (--this.value <= 0) {
       this.callback();
       return false;
     }
+    return true;
   }
 
   callback() {}

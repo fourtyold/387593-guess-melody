@@ -1,5 +1,5 @@
-import AbstractView from '../../abstractview.js';
-import {GameResult} from '../../data.js';
+import AbstractView from '../../abstract-view.js';
+import {GameResult, TimerData} from '../../data.js';
 
 export default class ResultView extends AbstractView {
 
@@ -24,8 +24,6 @@ export default class ResultView extends AbstractView {
     const mainReplay = this.element.querySelector(`.main-replay`);
     mainReplay.addEventListener(`click`, this.replayHandler);
   }
-
-  replayHandler() {}
 
   _getResultTitle() {
     let content;
@@ -89,64 +87,102 @@ export default class ResultView extends AbstractView {
     return content;
   }
 
+  _getMarkupObjNumbers() {
+    return {
+      minutesNum: Math.floor(this.resultObj.resultObj.totalTime / TimerData.ONE_MINUTE),
+      secondsNum: this.resultObj.resultObj.totalTime % TimerData.ONE_MINUTE,
+      scoreNum: this.resultObj.resultObj.userScore,
+      mistakesNum: this.resultObj.resultObj.mistakesCnt,
+      fastNum: this.resultObj.resultObj.fastAnswers,
+      place: this.resultObj.resultObj.currentPlace
+    };
+  }
+
   _getScoreMarkup() {
-    const markupObj = {};
-    markupObj.minutesNum = Math.floor(this.resultObj.resultObj.totalTime / 60);
-    markupObj.secondsNum = this.resultObj.resultObj.totalTime % 60;
-    markupObj.scoreNum = this.resultObj.resultObj.userScore;
-    markupObj.mistakesNum = this.resultObj.resultObj.mistakesCnt;
-    markupObj.fastNum = this.resultObj.resultObj.fastAnswers;
-    markupObj.place = this.resultObj.resultObj.currentPlace;
-    switch (true) {
-      case markupObj.minutesNum === 0:
-      case markupObj.minutesNum === 5:
-        markupObj.minutesForm = `минут`;
-        break;
-      case markupObj.minutesNum === 1:
-        markupObj.minutesForm = `минуту`;
-        break;
-      default:
-        markupObj.minutesForm = `минуты`;
-        break;
-    }
-    switch (true) {
-      case (markupObj.secondsNum % 10) > 1 && (markupObj.secondsNum % 10) < 5:
-        markupObj.secondsForm = `секунды`;
-        break;
-      case (markupObj.secondsNum % 10) === 1:
-        markupObj.secondsForm = `секунду`;
-        break;
-      default:
-        markupObj.secondsForm = `секунд`;
-        break;
-    }
-    switch (true) {
-      case markupObj.scoreNum === 4:
-        markupObj.scoreForm = `балла`;
-        break;
-      default:
-        markupObj.scoreForm = `баллов`;
-        break;
-    }
-    switch (true) {
-      case markupObj.mistakesNum === 0:
-        markupObj.mistakesForm = `ошибок`;
-        break;
-      case markupObj.mistakesNum === 1:
-        markupObj.mistakesForm = `ошибку`;
-        break;
-      default:
-        markupObj.mistakesForm = `ошибки`;
-        break;
-    }
-    switch (true) {
-      case markupObj.fastNum === 1:
-        markupObj.fastForm = `быстрый`;
-        break;
-      default:
-        markupObj.fastForm = `быстрых`;
-        break;
-    }
+    const markupObj = this._getMarkupObjNumbers();
+    markupObj.minutesForm = ResultView.getMinutesForm(markupObj.minutesNum);
+    markupObj.secondsForm = ResultView.getSecondsForm(markupObj.secondsNum);
+    markupObj.scoreForm = ResultView.getScoreForm(markupObj.scoreNum);
+    markupObj.mistakesForm = ResultView.getMistakesForm(markupObj.mistakesNum);
+    markupObj.fastForm = ResultView.getFastForm(markupObj.fastNum);
     return markupObj;
   }
+
+  replayHandler() {}
+
+  static getMinutesForm(minutes) {
+    let minutesForm;
+    switch (true) {
+      case minutes === 0:
+      case minutes === 5:
+        minutesForm = `минут`;
+        break;
+      case minutes === 1:
+        minutesForm = `минуту`;
+        break;
+      default:
+        minutesForm = `минуты`;
+        break;
+    }
+    return minutesForm;
+  }
+
+  static getSecondsForm(seconds) {
+    let secondsForm;
+    switch (true) {
+      case (seconds % 10) > 1 && (seconds % 10) < 5:
+        secondsForm = `секунды`;
+        break;
+      case (seconds % 10) === 1:
+        secondsForm = `секунду`;
+        break;
+      default:
+        secondsForm = `секунд`;
+        break;
+    }
+    return secondsForm;
+  }
+
+  static getScoreForm(score) {
+    let scoreForm;
+    switch (true) {
+      case score === 4:
+        scoreForm = `балла`;
+        break;
+      default:
+        scoreForm = `баллов`;
+        break;
+    }
+    return scoreForm;
+  }
+
+  static getMistakesForm(mistakes) {
+    let mistakesForm;
+    switch (true) {
+      case mistakes === 0:
+        mistakesForm = `ошибок`;
+        break;
+      case mistakes === 1:
+        mistakesForm = `ошибку`;
+        break;
+      default:
+        mistakesForm = `ошибки`;
+        break;
+    }
+    return mistakesForm;
+  }
+
+  static getFastForm(fastAns) {
+    let fastForm;
+    switch (true) {
+      case fastAns === 1:
+        fastForm = `быстрый`;
+        break;
+      default:
+        fastForm = `быстрых`;
+        break;
+    }
+    return fastForm;
+  }
+
 }
