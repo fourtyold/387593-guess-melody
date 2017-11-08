@@ -1,4 +1,4 @@
-import AbstractView from '../../abstractview.js';
+import AbstractView from '../../abstract-view.js';
 import ArtistView from './artist-view.js';
 import GenreView from './genre-view.js';
 import HeaderView from './header-view.js';
@@ -19,13 +19,6 @@ export default class GameView extends AbstractView {
     this.levelContainer = this.element.querySelector(`.level-container`);
   }
 
-  static _update(container, view) {
-    while (container.firstChild) {
-      container.firstChild.remove();
-    }
-    container.appendChild(view.element);
-  }
-
   updateScreen() {
     this.updateHeader();
     const view = (this.model.gameQuestion.type === this.model.data.QuestionType.ARTIST) ? (new ArtistView(this.model.gameQuestion)) : (new GenreView(this.model.gameQuestion));
@@ -34,11 +27,19 @@ export default class GameView extends AbstractView {
     view.playersHandler = (evt, genrePlayers, playersControls) => this.model.playersHandler(evt, genrePlayers, playersControls);
     view.genreFlagsHandler = (answerFlags, genreAnswerSend) => this.model.genreFlagsHandler(answerFlags, genreAnswerSend);
     view.genreAnswerHandler = (evt, answerFlags) => this.model.genreAnswerHandler(evt, answerFlags);
-    GameView._update(this.levelContainer, view);
+    GameView.update(this.levelContainer, view);
     this.newPlayer = view.newPlayer;
   }
 
   updateHeader() {
-    GameView._update(this.headerContainer, new HeaderView(this.model.data.gameData.mistakes, this.model.timer));
+    GameView.update(this.headerContainer, new HeaderView(this.model.data.gameData.mistakes, this.model.timer));
   }
+
+  static update(container, view) {
+    while (container.firstChild) {
+      container.firstChild.remove();
+    }
+    container.appendChild(view.element);
+  }
+
 }

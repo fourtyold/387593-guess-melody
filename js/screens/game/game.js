@@ -1,10 +1,10 @@
 import GameView from './game-view.js';
 import GameModel from './game-model.js';
-import {State, gameData, GameResult, QuestionType, NetData} from '../../data.js';
+import {State, gameData, GameResult, QuestionType, NetData, TimerData} from '../../data.js';
 import Application from '../../application.js';
 import ResultModel from '../result/result-model.js';
 import {togglePlayerControl} from '../../utils/util.js';
-import GameLoader from '../../utils/loader.js';
+import GameLoader from '../../utils/game-loader.js';
 
 const initialData = {
   State,
@@ -13,7 +13,7 @@ const initialData = {
   QuestionType
 };
 
-class GameScreen {
+class Game {
   constructor(questionList, data = initialData) {
     this.model = new GameModel(questionList, data);
     this.view = new GameView(this.model);
@@ -38,11 +38,44 @@ class GameScreen {
     this.model.playerHandler = (artistPlayer, playerControl) => this.playerHandler(artistPlayer, playerControl);
     this.model.genreFlagsHandler = (answerFlags, genreAnswerSend) => this.genreFlagsHandler(answerFlags, genreAnswerSend);
     this.model.playersHandler = (evt, genrePlayers, playersControls) => this.playersHandler(evt, genrePlayers, playersControls);
-    this.model.onArtistAnswer = (evt) => this.onArtistAnswer(evt);
-    this.model.onTimeOut = () => this.onTimeOut();
+    this.model.mainAnswerHandler = (evt) => this.mainAnswerHandler(evt);
+    this.model.timeOutHandler = () => this.timeOutHandler();
   }
 
-  onArtistAnswer(evt) {
+  showNextGameScreen(answer) {
+    this.model.data.gameData.stat.push(answer);
+    if (this.model.data.gameData.stat.length < this.model.questionList.length) {
+      this.model.updateQuestion();
+      this.view.updateScreen();
+      this.view.showScreen();
+      if (this.view.newPlayer) {
+        this.view.newPlayer.play();
+      }
+    } else {
+      const dataToSend = ResultModel.getResultToLoad(this.model.data.gameData);
+      GameLoader.loadResults(`${NetData.SERVER_URL}/stats/${NetData.DEFAULT_USERNAME}`, dataToSend, GameModel.getHistory, (history) => {
+        this.model.data.gameData.history = history;
+        this.showResultScreen(this.model.data.GameResult.SCORE);
+      });
+    }
+  }
+
+  showResultScreen(screenType) {
+    this.model.data.gameData.result = screenType;
+    clearTimeout(this.timer);
+    const resultObj = ResultModel.getResult(this.model.data.gameData);
+    Application.showStats(resultObj);
+  }
+
+  tick() {
+    this.model.timer.tick();
+    if (this.model.timer.value > 0) {
+      this.view.updateHeader();
+      this.timer = setTimeout(() => this.tick(), TimerData.ONE_SECOND);
+    }
+  }
+
+  mainAnswerHandler(evt) {
     let target = false;
     if (evt.target.classList.contains(`main-answer-preview`)) {
       target = evt.target.parentNode;
@@ -77,33 +110,8 @@ class GameScreen {
     }
   }
 
-  showNextGameScreen(answer) {
-    this.model.data.gameData.stat.push(answer);
-    if (this.model.data.gameData.stat.length < this.model.questionList.length) {
-      this.model.updateQuestion();
-      this.view.updateScreen();
-      this.view.showScreen();
-      if (this.view.newPlayer) {
-        this.view.newPlayer.play();
-      }
-    } else {
-      const dataToSend = ResultModel.getResultToLoad(this.model.data.gameData);
-      GameLoader.loadResults(`${NetData.SERVER_URL}/stats/${NetData.DEFAULT_USERNAME}`, dataToSend, GameModel.getHistory, (history) => {
-        this.model.data.gameData.history = history;
-        this.showResultScreen(this.model.data.GameResult.SCORE);
-      });
-    }
-  }
-
-  showResultScreen(screenType) {
-    this.model.data.gameData.result = screenType;
-    clearTimeout(this.timer);
-    const resultObj = ResultModel.getResult(this.model.data.gameData);
-    Application.showStats(resultObj);
-  }
-
   artistAnswerHandler(evt, artistAnswers) {
-    const target = this.onArtistAnswer(evt);
+    const target = this.mainAnswerHandler(evt);
     if (target) {
       const answer = this.model.getArtistAnswer(artistAnswers, target);
       if (answer.status) {
@@ -130,18 +138,10 @@ class GameScreen {
     }
   }
 
-  onTimeOut() {
+  timeOutHandler() {
     this.showResultScreen(this.model.data.GameResult.TIME);
-  }
-
-  tick() {
-    this.model.timer.tick();
-    if (this.model.timer.value > 0) {
-      this.view.updateHeader();
-      this.timer = setTimeout(() => this.tick(), 1000);
-    }
   }
 
 }
 
-export default GameScreen;
+export default Game;

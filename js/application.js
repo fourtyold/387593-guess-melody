@@ -1,15 +1,9 @@
 import welcomeScreen from './screens/welcome/welcome.js';
-import GameScreen from './screens/game/game.js';
+import Game from './screens/game/game.js';
 import resultScreen from './screens/result/result.js';
-import {NetData} from './data.js';
-import GameLoader from './utils/loader.js';
+import {NetData, ControllerId} from './data.js';
+import GameLoader from './utils/game-loader.js';
 import ResultObject from './utils/result-object.js';
-
-const ControllerId = {
-  WELCOME: ``,
-  GAME: `game`,
-  RESULT: `result`
-};
 
 export default class Application {
 
@@ -18,13 +12,13 @@ export default class Application {
   }
 
   getDataAndInit() {
-    this.gameLoader.downloadData(`${NetData.SERVER_URL}/questions`, Application.init, Application._allowToPlay);
+    this.gameLoader.downloadData(`${NetData.SERVER_URL}/questions`, Application.init, Application.allowToPlay);
   }
 
   static init(loadedData) {
     Application.routes = {
       [ControllerId.WELCOME]: welcomeScreen,
-      [ControllerId.GAME]: new GameScreen(loadedData),
+      [ControllerId.GAME]: new Game(loadedData),
       [ControllerId.RESULT]: resultScreen
     };
     const hashChangeHandler = () => {
@@ -38,13 +32,11 @@ export default class Application {
 
   static changeHash(id, data) {
     const controller = Application.routes[id];
-    if (controller) {
-      if (data) {
-        controller.init(this.decryptResult(this._loadState(data)));
-      } else {
-        controller.init(this._loadState(data));
-      }
+    if (controller && data) {
+      controller.init(this.decryptResult(this.loadState(data)));
+      return;
     }
+    controller.init(this.loadState(data));
   }
 
   static showGame() {
@@ -52,7 +44,8 @@ export default class Application {
   }
 
   static showStats(result) {
-    location.hash = `${ControllerId.RESULT}?${this._saveState(this.cryptResult(result))}`;
+    const hashContent = this.saveState(this.cryptResult(result));
+    location.hash = `${ControllerId.RESULT}?${hashContent.substring(1, hashContent.length - 1)}`;
   }
 
   static cryptResult(resultObj) {
@@ -72,17 +65,17 @@ export default class Application {
     return resultObj;
   }
 
-  static _allowToPlay() {
+  static allowToPlay() {
     document.querySelector(`.main-play`).removeAttribute(`style`);
   }
 
-  static _saveState(state) {
+  static saveState(state) {
     return JSON.stringify(state);
   }
 
-  static _loadState(dataString) {
+  static loadState(dataString) {
     try {
-      return JSON.parse(dataString);
+      return JSON.parse(`"${dataString}"`);
     } catch (e) {
       return false;
     }

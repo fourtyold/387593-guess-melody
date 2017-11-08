@@ -33,4 +33,18 @@ const NetData = {
   DEFAULT_USERNAME: `Mikhail387593`
 };
 
-export {State, gameData, GameResult, QuestionType, NetData};
+const TimerData = {
+  ONE_SECOND: 1000,
+  ONE_MINUTE: 60,
+  WARNING_TIME: 30,
+  BLINK_FREQUENCY: 500,
+  DOUBLE_SIGN: 10
+};
+
+const ControllerId = {
+  WELCOME: ``,
+  GAME: `game`,
+  RESULT: `result`
+};
+
+export {State, gameData, GameResult, QuestionType, NetData, TimerData, ControllerId};

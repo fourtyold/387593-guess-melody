@@ -11,10 +11,10 @@ export default class ResultModel {
     const resultObj = new ResultObject();
     let time = 0;
     let answers = 0;
-    const score = this._getScore(answerObj);
+    const score = this.getScore(answerObj);
     answerObj.stat.forEach((it) => {
       time += it.time;
-      if (it.time < 30) {
+      if (it.time < State.SLOW_ANSWER) {
         answers++;
       }
     });
@@ -32,13 +32,12 @@ export default class ResultModel {
     return resultObj;
   }
 
-  static _getScore(answerObj) {
+  static getScore(answerObj) {
     let score = State.MAX_SCORE;
     if (answerObj.mistakes > State.MAX_MISTAKES || answerObj.stat.length < State.ANSWERS_NUMBER - 1) {
       return -1;
-    } else {
-      score -= State.MISTAKE_PRICE * answerObj.mistakes;
     }
+    score -= State.MISTAKE_PRICE * answerObj.mistakes;
     answerObj.stat.forEach((it) => {
       if (it.time >= State.SLOW_ANSWER) {
         score--;
@@ -48,7 +47,7 @@ export default class ResultModel {
   }
 
   static getResultToLoad(answerObj) {
-    const scoreToLoad = this._getScore(answerObj);
+    const scoreToLoad = this.getScore(answerObj);
     let timeToLoad = 0;
     answerObj.stat.forEach((it) => {
       timeToLoad += it.time;

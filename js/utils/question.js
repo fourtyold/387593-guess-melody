@@ -9,8 +9,8 @@ export default class Question {
     if (gameType === QuestionType.ARTIST) {
       this.correctAnswer = null;
       this.src = ``;
-    } else {
-      this.correctAnswers = [];
+      return;
     }
+    this.correctAnswers = [];
   }
 }

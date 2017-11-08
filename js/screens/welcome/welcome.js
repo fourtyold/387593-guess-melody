@@ -1,13 +1,13 @@
 import Application from '../../application.js';
 import WelcomeView from './welcome-view.js';
 
-class WelcomeScreen {
+class Welcome {
   constructor() {
     this.view = new WelcomeView();
   }
 
   init() {
-    this.view.mainPlayClick = () => {
+    this.view.mainPlayHandler = () => {
       Application.showGame();
     };
     this.view.showScreen();
@@ -15,4 +15,4 @@ class WelcomeScreen {
 
 }
 
-export default new WelcomeScreen();
+export default new Welcome();

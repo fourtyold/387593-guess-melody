@@ -2,7 +2,7 @@ import Application from '../../application.js';
 import ResultView from './result-view.js';
 import ResultModel from './result-model.js';
 
-class ResultScreen {
+class Result {
 
   init(result) {
     this.model = new ResultModel(result);
@@ -14,4 +14,4 @@ class ResultScreen {
   }
 }
 
-export default new ResultScreen();
+export default new Result();
