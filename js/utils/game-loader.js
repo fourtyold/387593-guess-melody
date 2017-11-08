@@ -25,24 +25,24 @@ export default class GameLoader {
 
   _downloadImage(list, callback) {
     let imageCounter = 0;
-    const onDataLoad = () => {
+    const dataLoadHandler = () => {
       imageCounter += 1;
       if (imageCounter === list.size - 1) {
         Application.init(gameData.loadedData);
         callback();
       }
     };
-    const onLoadError = (media) => {
+    const loadErrorHandler = (media) => {
       GameLoader.changeImgUrl(media, gameData.loadedData);
     };
     list.forEach((it) => {
       let media = new Image();
       media.src = it;
       media.onload = () => {
-        onDataLoad();
+        dataLoadHandler();
       };
       media.onerror = () => {
-        onLoadError(media);
+        loadErrorHandler(media);
       };
     });
   }

@@ -44,7 +44,8 @@ export default class Application {
   }
 
   static showStats(result) {
-    location.hash = `${ControllerId.RESULT}?${this.saveState(this.cryptResult(result))}`;
+    const hashContent = this.saveState(this.cryptResult(result));
+    location.hash = `${ControllerId.RESULT}?${hashContent.substring(1, hashContent.length - 1)}`;
   }
 
   static cryptResult(resultObj) {
@@ -74,7 +75,7 @@ export default class Application {
 
   static loadState(dataString) {
     try {
-      return JSON.parse(dataString);
+      return JSON.parse(`"${dataString}"`);
     } catch (e) {
       return false;
     }
